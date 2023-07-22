@@ -691,7 +691,7 @@ section {
 }
 
 .featured .icon-box:hover i,
-.featured .icon-box:hover h3 a,
+.featured .icon-box:hover h3 h4 a,
 .featured .icon-box:hover p {
   color: #fff;
 }
@@ -799,7 +799,7 @@ section {
   background: #ef9383;
 }
 
-.services .icon-box:hover a h4,
+.services .icon-box:hover h4 a,
 .services .icon-box:hover p {
   color: #fff;
 }

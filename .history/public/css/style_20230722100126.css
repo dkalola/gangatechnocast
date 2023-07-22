@@ -799,7 +799,7 @@ section {
   background: #ef9383;
 }
 
-.services .icon-box:hover a h4,
+.services .icon-box:hover h4 a,
 .services .icon-box:hover p {
   color: #fff;
 }
