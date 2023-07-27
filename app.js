@@ -220,16 +220,16 @@ app.post("/submit-quote", async (req, res) => {
   const data = req.body;
 
   const edata = {
-    service_id: "service_hymuzw5",
+    service_id: process.env.SERVICE_ID,
     template_id: "template_fowxi8q",
-    user_id: "vt2reVETMnWQQXHcY",
+    user_id: process.env.USER_ID,
     template_params: {
       reply_to: "divyanshukalola88@gmail.com",
       to_name: "Divyanshu Kalola",
       message:
         "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
     },
-    accessToken: "gi7F2ZTOumVptVWajQ28Q",
+    accessToken: process.env.ACCESS_TOCKEN,
   };
 
   const edata2 = {
