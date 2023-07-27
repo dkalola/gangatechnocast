@@ -233,9 +233,9 @@ app.post("/submit-quote", async (req, res) => {
   };
 
   const edata2 = {
-    service_id: process.env.SERVICE_ID,
+    service_id: "service_hymuzw5",
     template_id: "template_z6kej7j",
-    user_id: process.env.USER_ID,
+    user_id: "vt2reVETMnWQQXHcY",
     template_params: {
       reply_to: "gangatechnocastllp@gmail.com",
       from_name: data.name,
@@ -245,7 +245,7 @@ app.post("/submit-quote", async (req, res) => {
       from_message: `Material: ${data.material}\n${data.message}`,
       from_tag: "Received - Quote",
     },
-    accessToken: process.env.ACCESS_TOCKEN,
+    accessToken: "gi7F2ZTOumVptVWajQ28Q",
   };
 
   data.timestamp = Timestamp.now();
@@ -309,7 +309,7 @@ app.post("/contact-us", async (req, res) => {
       from_message: data.message,
       from_tag: "Received - Contact US",
     },
-    accessToken: process.env.ACCESS_TOCKEN,
+    accessToken: "process.env.ACCESS_TOCKEN,
   };
 
   data.timestamp = Timestamp.now();
