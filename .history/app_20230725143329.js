@@ -148,26 +148,36 @@ app.get("/contact", (req, res) => {
   res.render("contact", { activePage: "contact", logout: false });
 });
 
-app.get("/admin", ensureAuthenticated, (req, res) => {
-  const listRef = ref(storage, "Gallery");
-  // Find all the prefixes and items.
-  listAll(listRef)
-    .then((res) => {
-      res.prefixes.forEach((folderRef) => {
-        // All the prefixes under listRef.
-        // You may call listAll() recursively on them.
-        // console.log(folderRef);
-      });
-      res.items.forEach((itemRef) => {
-        // All the items under listRef.
-        console.log(itemRef);
-      });
-    })
-    .catch((error) => {
-      // Uh-oh, an error occurred!
-      console.log(error);
+app.get("/admin", ensureAuthenticated, async (req, res) => {
+  try {
+    const bucket = getStorage().bucket();
+    const folderName = "Gallery"; // Replace this with the actual name of your 'Gallery' folder
+
+    // Get a reference to the folder in Firebase Storage
+    const listRef = ref(bucket, folderName);
+
+    // List all files in the folder
+    const [result] = await listAll(listRef);
+
+    const fileUrls = result.items.map((itemRef) => {
+      return {
+        name: itemRef.name,
+        url: `https://storage.googleapis.com/${bucket.name}/${itemRef.fullPath}`,
+      };
     });
-  res.render("admin", { activePage: "admin", logout: true, pg: "Gallery" });
+
+    // Render the admin page with the file URLs
+    res.render("admin", {
+      activePage: "admin",
+      logout: true,
+      pg: "Gallery",
+      files: fileUrls,
+    });
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching files:", error);
+    res.status(500).send("Error fetching files");
+  }
 });
 
 app.get("/login", (req, res) => {

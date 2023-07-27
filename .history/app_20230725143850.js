@@ -156,7 +156,7 @@ app.get("/admin", ensureAuthenticated, (req, res) => {
       res.prefixes.forEach((folderRef) => {
         // All the prefixes under listRef.
         // You may call listAll() recursively on them.
-        // console.log(folderRef);
+        console.log(folderRef);
       });
       res.items.forEach((itemRef) => {
         // All the items under listRef.

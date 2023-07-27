@@ -66,22 +66,16 @@
 
           <div class="col-lg-3">
             <div class="services-list">
-              <a href="/admin?pg=Gallery" class="<%= pg === 'Gallery' ? 'active' : '' %>">Gallery</a>
-              <a href="/admin?pg=Quotes" class="<%= pg === 'Quotes' ? 'active' : '' %>">Quotes</a>
-              <a href="/admin?pg=Messages" class="<%= pg === 'Messages' ? 'active' : '' %>">Messages</a>
-              <a href="/admin?pg=Blog" class="<%= pg === 'Blog' ? 'active' : '' %>">Blog</a>
+              <a href="/admin?pg=Gallery" class="">Gallery</a>
+              <a href="/admin?pg=Quotes" class="">Quotes</a>
+              <a href="/admin?pg=Messages" class="">Messages</a>
+              <a href="/admin?pg=Blog" class="">Blog</a>
             </div>
          </div>
 
           <div class="col-lg-9">
             <% if (pg == "Gallery") { %>
               <!-- Code to be executed if the condition is true -->
-              <div class="row">
-                <div class="col">
-                  <h3>Gallery</h3>
-                  <p><i>Add, Delete, Update your project images here.</i></p>
-                </div>
-              </div>
             <% } else if (pg == "Quotes") { %>
               <!-- Code to be executed if the condition is false -->
             <% } else if (pg == "Messages") { %>

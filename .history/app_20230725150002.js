@@ -160,7 +160,9 @@ app.get("/admin", ensureAuthenticated, (req, res) => {
       });
       res.items.forEach((itemRef) => {
         // All the items under listRef.
-        console.log(itemRef);
+        console.log(
+          `https://storage.googleapis.com/${itemRef.bucket}/${itemRef.fullPath}`
+        );
       });
     })
     .catch((error) => {

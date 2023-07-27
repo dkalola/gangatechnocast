@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { initializeApp } = require("firebase/app");
-const { getStorage, listAll, ref } = require("firebase/storage");
 const {
   getFirestore,
   collection,
@@ -22,7 +21,6 @@ const app = express();
 const fapp = initializeApp(firebaseConfig);
 const db = getFirestore(fapp);
 const auth = getAuth(fapp); // Get the Auth object
-const storage = getStorage(fapp);
 setPersistence(auth, browserLocalPersistence);
 
 app.use(express.json()); // Parse JSON request bodies
@@ -149,24 +147,6 @@ app.get("/contact", (req, res) => {
 });
 
 app.get("/admin", ensureAuthenticated, (req, res) => {
-  const listRef = ref(storage, "Gallery");
-  // Find all the prefixes and items.
-  listAll(listRef)
-    .then((res) => {
-      res.prefixes.forEach((folderRef) => {
-        // All the prefixes under listRef.
-        // You may call listAll() recursively on them.
-        // console.log(folderRef);
-      });
-      res.items.forEach((itemRef) => {
-        // All the items under listRef.
-        console.log(itemRef);
-      });
-    })
-    .catch((error) => {
-      // Uh-oh, an error occurred!
-      console.log(error);
-    });
   res.render("admin", { activePage: "admin", logout: true, pg: "Gallery" });
 });
 

@@ -160,7 +160,7 @@ app.get("/admin", ensureAuthenticated, (req, res) => {
       });
       res.items.forEach((itemRef) => {
         // All the items under listRef.
-        console.log(itemRef);
+        console.log(itemRef.bucket);
       });
     })
     .catch((error) => {
