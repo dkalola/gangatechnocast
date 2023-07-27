@@ -239,7 +239,7 @@ app.post("/submit-quote", async (req, res) => {
       from_name: data.name,
       from_email: data.email,
       from_phone: data.phone,
-      from_subject: `Quote from ${data.name}. Material: ${data.material}`,
+      from_subject: `Quote from ${data.name}`,
       from_message: `Material: ${data.material}\n${data.message}`,
       from_tag: "Received - Quote",
     },
@@ -256,26 +256,25 @@ app.post("/submit-quote", async (req, res) => {
     console.log("Document written with ID: ", docRef.id);
 
     axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata2)
+      .post("https://api.emailjs.com/api/v1.0/email/send", edata)
       .then((response) => {
         console.log("Email sent successfully!", response.data);
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
-        });
-      });
-
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata)
-      .then((response2) => {
-        console.log("Email sent successfully!", response2.data);
-        res.status(201).json({
-          success: true,
-          message: "Quote submitted successfully!",
-        });
+        axios
+          .post("https://api.emailjs.com/api/v1.0/email/send", edata)
+          .then((response) => {
+            console.log("Email sent successfully!", response.data);
+            res.status(201).json({
+              success: true,
+              message: "Quote submitted successfully!",
+            });
+          })
+          .catch((error) => {
+            console.error("Error sending email:", error.response.data);
+            res.status(500).json({
+              success: false,
+              message: "Data is recoded but email was not able to sent.",
+            });
+          });
       })
       .catch((error) => {
         console.error("Error sending email:", error.response.data);

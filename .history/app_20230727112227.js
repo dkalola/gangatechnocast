@@ -239,7 +239,7 @@ app.post("/submit-quote", async (req, res) => {
       from_name: data.name,
       from_email: data.email,
       from_phone: data.phone,
-      from_subject: `Quote from ${data.name}. Material: ${data.material}`,
+      from_subject: `Quote from ${data.name}`,
       from_message: `Material: ${data.material}\n${data.message}`,
       from_tag: "Received - Quote",
     },

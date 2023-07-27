@@ -217,35 +217,6 @@ app.get("/logout", (req, res) => {
 app.post("/submit-quote", async (req, res) => {
   const data = req.body;
 
-  const edata = {
-    service_id: "service_hymuzw5",
-    template_id: "template_fowxi8q",
-    user_id: "vt2reVETMnWQQXHcY",
-    template_params: {
-      reply_to: "divyanshukalola88@gmail.com",
-      to_name: "Divyanshu Kalola",
-      message:
-        "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
-    },
-    accessToken: "gi7F2ZTOumVptVWajQ28Q",
-  };
-
-  const edata2 = {
-    service_id: "service_hymuzw5",
-    template_id: "template_z6kej7j",
-    user_id: "vt2reVETMnWQQXHcY",
-    template_params: {
-      reply_to: "gangatechnocastllp@gmail.com",
-      from_name: data.name,
-      from_email: data.email,
-      from_phone: data.phone,
-      from_subject: `Quote from ${data.name}. Material: ${data.material}`,
-      from_message: `Material: ${data.material}\n${data.message}`,
-      from_tag: "Received - Quote",
-    },
-    accessToken: "gi7F2ZTOumVptVWajQ28Q",
-  };
-
   data.timestamp = Timestamp.now();
   try {
     // Reference to the Firestore collection where you want to store the data
@@ -255,35 +226,9 @@ app.post("/submit-quote", async (req, res) => {
     const docRef = await addDoc(quotesCollection, data);
     console.log("Document written with ID: ", docRef.id);
 
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata2)
-      .then((response) => {
-        console.log("Email sent successfully!", response.data);
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
-        });
-      });
-
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata)
-      .then((response2) => {
-        console.log("Email sent successfully!", response2.data);
-        res.status(201).json({
-          success: true,
-          message: "Quote submitted successfully!",
-        });
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
-        });
-      });
+    res
+      .status(201)
+      .json({ success: true, message: "Quote submitted successfully!" });
   } catch (error) {
     console.error("Error adding document: ", error);
     res.status(500).json({ success: false, message: "Error adding document" });
@@ -292,23 +237,6 @@ app.post("/submit-quote", async (req, res) => {
 
 app.post("/contact-us", async (req, res) => {
   const data = req.body;
-  console.log(data);
-
-  const edata = {
-    service_id: "service_hymuzw5",
-    template_id: "template_z6kej7j",
-    user_id: "vt2reVETMnWQQXHcY",
-    template_params: {
-      reply_to: "gangatechnocastllp@gmail.com",
-      from_name: data.name,
-      from_email: data.email,
-      from_phone: data.phone,
-      from_subject: data.subject,
-      from_message: data.message,
-      from_tag: "Received - Contact US",
-    },
-    accessToken: "gi7F2ZTOumVptVWajQ28Q",
-  };
 
   data.timestamp = Timestamp.now();
   try {
@@ -319,21 +247,9 @@ app.post("/contact-us", async (req, res) => {
     const docRef = await addDoc(quotesCollection, data);
     console.log("Document written with ID: ", docRef.id);
 
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata)
-      .then((response) => {
-        console.log("Email sent successfully!", response.data);
-        res
-          .status(201)
-          .json({ success: true, message: "Quote submitted successfully!" });
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
-        });
-      });
+    res
+      .status(201)
+      .json({ success: true, message: "Quote submitted successfully!" });
   } catch (error) {
     console.error("Error adding document: ", error);
     res.status(500).json({ success: false, message: "Error adding document" });
@@ -349,7 +265,7 @@ app.get("/test", async (req, res) => {
       reply_to: "divyanshukalola88@gmail.com",
       to_name: "Divyanshu Kalola",
       message:
-        "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
+        "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with our investment casting firm.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
     },
     accessToken: "gi7F2ZTOumVptVWajQ28Q",
   };
