@@ -56,7 +56,7 @@ function ensureAuthenticated(req, res, next) {
 app.get(
   "/",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -66,7 +66,7 @@ app.get(
 app.get(
   "/about",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -77,7 +77,7 @@ app.get(
 app.get(
   "/wws",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -149,7 +149,7 @@ const services = [
 app.get(
   "/service-d",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -172,7 +172,7 @@ app.get(
 app.get(
   "/projects",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -183,7 +183,7 @@ app.get(
 app.get(
   "/ic",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -194,7 +194,7 @@ app.get(
 app.get(
   "/contact",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -205,7 +205,7 @@ app.get(
 app.get(
   "/admin",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   ensureAuthenticated,
@@ -235,7 +235,7 @@ app.get(
 app.get(
   "/login",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -247,7 +247,7 @@ app.get(
 app.post(
   "/login",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -278,7 +278,7 @@ app.post(
 app.get(
   "/logout",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
@@ -299,7 +299,7 @@ app.get(
 app.post(
   "/submit-quote",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
@@ -384,7 +384,7 @@ app.post(
 app.post(
   "/contact-us",
   limit({
-    max: 5, // 5 requests
+    max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
@@ -443,7 +443,7 @@ app.post(
 // app.get(
 //   "/test",
 //   limit({
-//     max: 5, // 5 requests
+//     max: 10, // 10 requests
 //     period: 60 * 1000, // per minute (60 seconds)
 //   }),
 //   async (req, res) => {
