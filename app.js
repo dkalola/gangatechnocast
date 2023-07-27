@@ -19,6 +19,8 @@ const firebaseConfig = require("./firebase"); // Import the configuration data
 const dotenv = require("dotenv");
 dotenv.config();
 
+const limit = require("express-limit").limit;
+
 const app = express();
 
 // Initialize Firebase with the configuration data
@@ -51,16 +53,37 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-app.get("/", (req, res) => {
-  res.render("home", { activePage: "home", logout: false });
-});
-app.get("/about", (req, res) => {
-  res.render("about", { activePage: "about", logout: false });
-});
+app.get(
+  "/",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("home", { activePage: "home", logout: false });
+  }
+);
+app.get(
+  "/about",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("about", { activePage: "about", logout: false });
+  }
+);
 
-app.get("/wws", (req, res) => {
-  res.render("services", { activePage: "services", logout: false });
-});
+app.get(
+  "/wws",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("services", { activePage: "services", logout: false });
+  }
+);
 
 const services = [
   {
@@ -123,255 +146,339 @@ const services = [
 //   res.render("service-details", { activePage: "services" });
 // });
 
-app.get("/service-d", (req, res) => {
-  const serviceID = req.query.service;
-  const service = services.find((service) => service.id === serviceID);
-  if (!service) {
-    // If the service is not found, you can handle the error or render an error page
-    // res.status(404).send("Service not found");
-    res.render("services", { activePage: "services", logout: false });
-  } else {
-    // Render the service-details page with the corresponding service data
-    res.render("service-details", {
-      activePage: "services",
-      data: service,
-      logout: false,
-    });
+app.get(
+  "/service-d",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    const serviceID = req.query.service;
+    const service = services.find((service) => service.id === serviceID);
+    if (!service) {
+      // If the service is not found, you can handle the error or render an error page
+      // res.status(404).send("Service not found");
+      res.render("services", { activePage: "services", logout: false });
+    } else {
+      // Render the service-details page with the corresponding service data
+      res.render("service-details", {
+        activePage: "services",
+        data: service,
+        logout: false,
+      });
+    }
   }
-});
-app.get("/projects", (req, res) => {
-  res.render("projects", { activePage: "projects", logout: false });
-});
+);
+app.get(
+  "/projects",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("projects", { activePage: "projects", logout: false });
+  }
+);
 
-app.get("/ic", (req, res) => {
-  res.render("ic", { activePage: "ic", logout: false });
-});
+app.get(
+  "/ic",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("ic", { activePage: "ic", logout: false });
+  }
+);
 
-app.get("/contact", (req, res) => {
-  res.render("contact", { activePage: "contact", logout: false });
-});
+app.get(
+  "/contact",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("contact", { activePage: "contact", logout: false });
+  }
+);
 
-app.get("/admin", ensureAuthenticated, (req, res) => {
-  const listRef = ref(storage, "Gallery");
-  // Find all the prefixes and items.
-  listAll(listRef)
-    .then((res) => {
-      res.prefixes.forEach((folderRef) => {
-        // All the prefixes under listRef.
-        // You may call listAll() recursively on them.
-        // console.log(folderRef);
+app.get(
+  "/admin",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  ensureAuthenticated,
+  (req, res) => {
+    const listRef = ref(storage, "Gallery");
+    // Find all the prefixes and items.
+    listAll(listRef)
+      .then((res) => {
+        res.prefixes.forEach((folderRef) => {
+          // All the prefixes under listRef.
+          // You may call listAll() recursively on them.
+          // console.log(folderRef);
+        });
+        res.items.forEach((itemRef) => {
+          // All the items under listRef.
+          console.log(itemRef);
+        });
+      })
+      .catch((error) => {
+        // Uh-oh, an error occurred!
+        console.log(error);
       });
-      res.items.forEach((itemRef) => {
-        // All the items under listRef.
-        console.log(itemRef);
-      });
-    })
-    .catch((error) => {
-      // Uh-oh, an error occurred!
-      console.log(error);
-    });
-  res.render("admin", { activePage: "admin", logout: true, pg: "Gallery" });
-});
+    res.render("admin", { activePage: "admin", logout: true, pg: "Gallery" });
+  }
+);
 
-app.get("/login", (req, res) => {
-  res.render("login", { activePage: "login", logout: false });
-});
+app.get(
+  "/login",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    res.render("login", { activePage: "login", logout: false });
+  }
+);
 
 // Handle login form submission
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+app.post(
+  "/login",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
 
-  // Authenticate the user using Firebase Authentication
-  // Implement the appropriate authentication method (e.g., email/password, Google login, etc.)
+    // Authenticate the user using Firebase Authentication
+    // Implement the appropriate authentication method (e.g., email/password, Google login, etc.)
 
-  // For example, using Firebase email/password authentication:
-  signInWithEmailAndPassword(auth, email, password) // Use the auth object
-    .then((userCredential) => {
-      // User login successful
-      const user = userCredential.user;
-      console.log("User logged in:", user.email);
-      // Redirect the user to the dashboard or any other page
-      res.redirect("/admin");
-    })
-    .catch((error) => {
-      // Handle login errors here
-      console.error("Login error:", error.message);
-      // Redirect the user back to the login page with an error message (if needed)
-      res.redirect("/login?error=" + encodeURIComponent(error.message));
-    });
-});
-
-app.get("/logout", (req, res) => {
-  auth
-    .signOut()
-    .then(() => {
-      // User logged out successfully
-      console.log("User logged out.");
-      res.redirect("/login");
-    })
-    .catch((error) => {
-      console.error("Logout error:", error.message);
-      res.redirect("/admin"); // Redirect to dashboard or any other page with an error message
-    });
-});
-
-app.post("/submit-quote", async (req, res) => {
-  const data = req.body;
-
-  const edata = {
-    service_id: process.env.SERVICE_ID,
-    template_id: "template_fowxi8q",
-    user_id: process.env.USER_ID,
-    template_params: {
-      reply_to: "divyanshukalola88@gmail.com",
-      to_name: "Divyanshu Kalola",
-      message:
-        "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
-    },
-    accessToken: process.env.ACCESS_TOCKEN,
-  };
-
-  const edata2 = {
-    service_id: process.env.SERVICE_ID,
-    template_id: "template_z6kej7j",
-    user_id: process.env.USER_ID,
-    template_params: {
-      reply_to: "gangatechnocastllp@gmail.com",
-      from_name: data.name,
-      from_email: data.email,
-      from_phone: data.phone,
-      from_subject: `Quote from ${data.name}. Material: ${data.material}`,
-      from_message: `Material: ${data.material}\n${data.message}`,
-      from_tag: "Received - Quote",
-    },
-    accessToken: process.env.ACCESS_TOCKEN,
-  };
-
-  data.timestamp = Timestamp.now();
-  try {
-    // Reference to the Firestore collection where you want to store the data
-    const quotesCollection = collection(db, "quotes");
-
-    // Write the data to Firestore using the `add` method, which returns a promise
-    const docRef = await addDoc(quotesCollection, data);
-    console.log("Document written with ID: ", docRef.id);
-
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata2)
-      .then((response) => {
-        console.log("Email sent successfully!", response.data);
+    // For example, using Firebase email/password authentication:
+    signInWithEmailAndPassword(auth, email, password) // Use the auth object
+      .then((userCredential) => {
+        // User login successful
+        const user = userCredential.user;
+        console.log("User logged in:", user.email);
+        // Redirect the user to the dashboard or any other page
+        res.redirect("/admin");
       })
       .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
-        });
+        // Handle login errors here
+        console.error("Login error:", error.message);
+        // Redirect the user back to the login page with an error message (if needed)
+        res.redirect("/login?error=" + encodeURIComponent(error.message));
       });
-
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata)
-      .then((response2) => {
-        console.log("Email sent successfully!", response2.data);
-        res.status(201).json({
-          success: true,
-          message: "Quote submitted successfully!",
-        });
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
-        });
-      });
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    res.status(500).json({ success: false, message: "Error adding document" });
   }
-});
+);
 
-app.post("/contact-us", async (req, res) => {
-  const data = req.body;
-  console.log(data);
-
-  const edata = {
-    service_id: process.env.SERVICE_ID,
-    template_id: "template_z6kej7j",
-    user_id: process.env.USER_ID,
-    template_params: {
-      reply_to: "gangatechnocastllp@gmail.com",
-      from_name: data.name,
-      from_email: data.email,
-      from_phone: data.phone,
-      from_subject: data.subject,
-      from_message: data.message,
-      from_tag: "Received - Contact US",
-    },
-    accessToken: process.env.ACCESS_TOCKEN,
-  };
-
-  data.timestamp = Timestamp.now();
-  try {
-    // Reference to the Firestore collection where you want to store the data
-    const quotesCollection = collection(db, "contact_us");
-
-    // Write the data to Firestore using the `add` method, which returns a promise
-    const docRef = await addDoc(quotesCollection, data);
-    console.log("Document written with ID: ", docRef.id);
-
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", edata)
-      .then((response) => {
-        console.log("Email sent successfully!", response.data);
-        res
-          .status(201)
-          .json({ success: true, message: "Quote submitted successfully!" });
+app.get(
+  "/logout",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    auth
+      .signOut()
+      .then(() => {
+        // User logged out successfully
+        console.log("User logged out.");
+        res.redirect("/login");
       })
       .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({
-          success: false,
-          message: "Data is recoded but email was not able to sent.",
+        console.error("Logout error:", error.message);
+        res.redirect("/admin"); // Redirect to dashboard or any other page with an error message
+      });
+  }
+);
+
+app.post(
+  "/submit-quote",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  async (req, res) => {
+    const data = req.body;
+
+    const edata = {
+      service_id: process.env.SERVICE_ID,
+      template_id: "template_fowxi8q",
+      user_id: process.env.USER_ID,
+      template_params: {
+        reply_to: "divyanshukalola88@gmail.com",
+        to_name: "Divyanshu Kalola",
+        message:
+          "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
+      },
+      accessToken: process.env.ACCESS_TOCKEN,
+    };
+
+    const edata2 = {
+      service_id: process.env.SERVICE_ID,
+      template_id: "template_z6kej7j",
+      user_id: process.env.USER_ID,
+      template_params: {
+        reply_to: "gangatechnocastllp@gmail.com",
+        from_name: data.name,
+        from_email: data.email,
+        from_phone: data.phone,
+        from_subject: `Quote from ${data.name}. Material: ${data.material}`,
+        from_message: `Material: ${data.material}\n${data.message}`,
+        from_tag: "Received - Quote",
+      },
+      accessToken: process.env.ACCESS_TOCKEN,
+    };
+
+    data.timestamp = Timestamp.now();
+    try {
+      // Reference to the Firestore collection where you want to store the data
+      const quotesCollection = collection(db, "quotes");
+
+      // Write the data to Firestore using the `add` method, which returns a promise
+      const docRef = await addDoc(quotesCollection, data);
+      console.log("Document written with ID: ", docRef.id);
+
+      axios
+        .post("https://api.emailjs.com/api/v1.0/email/send", edata2)
+        .then((response) => {
+          console.log("Email sent successfully!", response.data);
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error.response.data);
+          res.status(500).json({
+            success: false,
+            message: "Data is recoded but email was not able to sent.",
+          });
         });
-      });
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    res.status(500).json({ success: false, message: "Error adding document" });
-  }
-});
 
-app.get("/test", async (req, res) => {
-  const data = {
-    service_id: process.env.SERVICE_ID,
-    template_id: "template_fowxi8q",
-    user_id: process.env.USER_ID,
-    template_params: {
-      reply_to: "divyanshukalola88@gmail.com",
-      to_name: "Divyanshu Kalola",
-      message:
-        "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
-    },
-    accessToken: process.env.ACCESS_TOCKEN,
-  };
-  try {
-    // Make a POST request to the emailjs API
-    axios
-      .post("https://api.emailjs.com/api/v1.0/email/send", data)
-      .then((response) => {
-        console.log("Email sent successfully!", response.data);
-        res.json({ message: "Your mail is sent!" });
-      })
-      .catch((error) => {
-        console.error("Error sending email:", error.response.data);
-        res.status(500).json({ error: "Oops, something went wrong!" });
-      });
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    res.status(500).json({ success: false, message: "Error adding document" });
+      axios
+        .post("https://api.emailjs.com/api/v1.0/email/send", edata)
+        .then((response2) => {
+          console.log("Email sent successfully!", response2.data);
+          res.status(201).json({
+            success: true,
+            message: "Quote submitted successfully!",
+          });
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error.response.data);
+          res.status(500).json({
+            success: false,
+            message: "Data is recoded but email was not able to sent.",
+          });
+        });
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Error adding document" });
+    }
   }
-});
+);
+
+app.post(
+  "/contact-us",
+  limit({
+    max: 5, // 5 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  async (req, res) => {
+    const data = req.body;
+    console.log(data);
+
+    const edata = {
+      service_id: process.env.SERVICE_ID,
+      template_id: "template_z6kej7j",
+      user_id: process.env.USER_ID,
+      template_params: {
+        reply_to: "gangatechnocastllp@gmail.com",
+        from_name: data.name,
+        from_email: data.email,
+        from_phone: data.phone,
+        from_subject: data.subject,
+        from_message: data.message,
+        from_tag: "Received - Contact US",
+      },
+      accessToken: process.env.ACCESS_TOCKEN,
+    };
+
+    data.timestamp = Timestamp.now();
+    try {
+      // Reference to the Firestore collection where you want to store the data
+      const quotesCollection = collection(db, "contact_us");
+
+      // Write the data to Firestore using the `add` method, which returns a promise
+      const docRef = await addDoc(quotesCollection, data);
+      console.log("Document written with ID: ", docRef.id);
+
+      axios
+        .post("https://api.emailjs.com/api/v1.0/email/send", edata)
+        .then((response) => {
+          console.log("Email sent successfully!", response.data);
+          res
+            .status(201)
+            .json({ success: true, message: "Quote submitted successfully!" });
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error.response.data);
+          res.status(500).json({
+            success: false,
+            message: "Data is recoded but email was not able to sent.",
+          });
+        });
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Error adding document" });
+    }
+  }
+);
+
+// app.get(
+//   "/test",
+//   limit({
+//     max: 5, // 5 requests
+//     period: 60 * 1000, // per minute (60 seconds)
+//   }),
+//   async (req, res) => {
+//     const data = {
+//       service_id: process.env.SERVICE_ID,
+//       template_id: "template_fowxi8q",
+//       user_id: process.env.USER_ID,
+//       template_params: {
+//         reply_to: "divyanshukalola88@gmail.com",
+//         to_name: "Divyanshu Kalola",
+//         message:
+//           "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
+//       },
+//       accessToken: process.env.ACCESS_TOCKEN,
+//     };
+//     try {
+//       // Make a POST request to the emailjs API
+//       axios
+//         .post("https://api.emailjs.com/api/v1.0/email/send", data)
+//         .then((response) => {
+//           console.log("Email sent successfully!", response.data);
+//           res.json({ message: "Your mail is sent!" });
+//         })
+//         .catch((error) => {
+//           console.error("Error sending email:", error.response.data);
+//           res.status(500).json({ error: "Oops, something went wrong!" });
+//         });
+//     } catch (error) {
+//       console.error("Error adding document: ", error);
+//       res
+//         .status(500)
+//         .json({ success: false, message: "Error adding document" });
+//     }
+//   }
+// );
 
 
 
