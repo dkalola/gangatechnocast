@@ -74,20 +74,19 @@
          </div>
 
           <div class="col-lg-9">
+            
             <% if (pg == "Gallery") { %>
               <!-- Code to be executed if the condition is true -->
-              <div class="row">
-                <div class="col">
-                  <h3>Gallery</h3>
-                  <p><i>Add, Delete, Update your project images here.</i></p>
-                </div>
-              </div>
+              <%- include('admin_gallery') %>
             <% } else if (pg == "Quotes") { %>
               <!-- Code to be executed if the condition is false -->
+              <%- include('admin_quotes') %>
             <% } else if (pg == "Messages") { %>
               <!-- Code to be executed if the condition is false -->
+              <%- include('admin_messages') %>
             <% } else if (pg == "Blog") { %>
               <!-- Code to be executed if the condition is false -->
+              <%- include('admin_blog') %>
             <% } else { %>
               <!-- Code to be executed if the condition is false -->
             <% } %>
@@ -122,6 +121,45 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+
+
+ <script>
+    // Get the file input element
+    const fileInput = document.getElementById('file');
+    
+
+
+    // Add an event listener to the file input to handle the file selection
+    fileInput.addEventListener('change', (event) => {
+      const FileName = document.getElementById('imageName');
+      const file = event.target.files[0];
+      if (file) {
+        // Convert the file to a Blob
+        const blob = new Blob([file], { type: file.type });
+
+        // Create a new FormData object and append the Blob to it
+        const formData = new FormData();
+        formData.append('file', blob, FileName.value);
+
+        // Send the FormData object to the backend using Fetch API or XMLHttpRequest
+        fetch('/admin', {
+          method: 'POST',
+          body: formData
+        })
+        .then((response) => {
+          if (response.ok) {
+            console.log('File uploaded successfully.');
+            location.reload();
+          } else {
+            console.error('Error uploading file:', response.status);
+          }
+        })
+        .catch((error) => {
+          console.error('Error uploading file:', error);
+        });
+      }
+    });
+  </script>
 
 </body>
 

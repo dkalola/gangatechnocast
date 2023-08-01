@@ -2,7 +2,14 @@ const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const { initializeApp } = require("firebase/app");
-const { getStorage, listAll, ref } = require("firebase/storage");
+const {
+  getStorage,
+  listAll,
+  ref,
+  getDownloadURL,
+  deleteObject,
+  uploadBytes,
+} = require("firebase/storage");
 const {
   getFirestore,
   collection,
@@ -38,6 +45,10 @@ app.use("/assets", express.static("public"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Include the 'multer' package for handling file uploads
+const fileUpload = require("express-fileupload");
+app.use(fileUpload());
 
 // firebase auth middleware
 function ensureAuthenticated(req, res, next) {
@@ -175,8 +186,22 @@ app.get(
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
-  (req, res) => {
-    res.render("projects", { activePage: "projects", logout: false });
+  async (req, res) => {
+    let urls = await getUrls();
+
+    console.log(urls);
+
+    for (let i = 0; i < urls.length; i++) {
+      const item = urls[i];
+      const pathParts = item.path.split(".");
+      urls[i].path = pathParts[0];
+    }
+
+    res.render("projects", {
+      activePage: "projects",
+      logout: false,
+      urls: urls,
+    });
   }
 );
 
@@ -209,28 +234,125 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   ensureAuthenticated,
-  (req, res) => {
-    const listRef = ref(storage, "Gallery");
-    // Find all the prefixes and items.
-    listAll(listRef)
-      .then((res) => {
-        res.prefixes.forEach((folderRef) => {
-          // All the prefixes under listRef.
-          // You may call listAll() recursively on them.
-          // console.log(folderRef);
+  async (req, res) => {
+    const pg = req.query.pg;
+    const action = req.query.action;
+    const imgURL = req.query.imgurl;
+    console.log(req.query);
+    console.log(req.file);
+
+    if (pg != undefined) {
+      if (pg == "Gallery") {
+        // Checks if the action is to delete
+        if (action == "delete") {
+          await deleteImage(imgURL);
+        }
+        // get all links to the image
+        let urls = await getUrls();
+        res.render("admin", {
+          activePage: "admin",
+          logout: true,
+          pg: pg,
+          urls: urls,
         });
-        res.items.forEach((itemRef) => {
-          // All the items under listRef.
-          console.log(itemRef);
-        });
-      })
-      .catch((error) => {
-        // Uh-oh, an error occurred!
-        console.log(error);
+      }
+    } else {
+      let urls = await getUrls();
+      res.render("admin", {
+        activePage: "admin",
+        logout: true,
+        pg: "Gallery",
+        urls: urls,
       });
-    res.render("admin", { activePage: "admin", logout: true, pg: "Gallery" });
+    }
   }
 );
+
+app.post(
+  "/admin",
+  limit({
+    max: 20, // 20 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  ensureAuthenticated,
+  express.raw({ type: "image/png" }),
+  async (req, res) => {
+    // Access the file u.file
+    const fileData = req.files.file.data;
+    let status = await uploadImage(fileData, req.files.file.name);
+    if (status) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(200).send(status);
+    }
+  }
+);
+
+// Helper Functions
+async function getUrls() {
+  const listRef = ref(storage, "Gallery");
+  const URLS = [];
+
+  try {
+    const res = await listAll(listRef);
+
+    const promises = res.items.map(async (itemRef) => {
+      try {
+        const url = await getDownloadURL(ref(storage, itemRef.fullPath));
+        URLS.push({
+          url: url,
+          path: itemRef.fullPath.split("/")[1],
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // Wait for all the promises to resolve
+    await Promise.all(promises);
+
+    return URLS;
+  } catch (error) {
+    console.log(error);
+    return URLS;
+  }
+}
+
+async function deleteImage(url) {
+  // Create a reference to the file to delete
+  const desertRef = ref(storage, `Gallery/${url}`);
+  console.log(url);
+
+  // Delete the file
+  await deleteObject(desertRef)
+    .then(() => {
+      // File deleted successfully
+      console.log("File deleted successfully");
+      return true;
+    })
+    .catch((error) => {
+      // Uh-oh, an error occurred!
+      console.log(error);
+      return error;
+    });
+}
+
+async function uploadImage(data,name) {
+  const storageRef = ref(storage, `Gallery/${name}`);
+
+  await uploadBytes(storageRef, data)
+    .then((snapshot) => {
+      console.log("File uploaded to Firebase Storage!");
+      // Optionally, you can remove the file from the server after uploading to Firebase Storage
+      // fs.unlinkSync(file.path);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error uploading file to Firebase Storage:", error);
+      return error
+    });
+}
+// End of Helper Functions
 
 app.get(
   "/login",
