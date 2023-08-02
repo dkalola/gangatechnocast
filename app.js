@@ -15,6 +15,10 @@ const {
   collection,
   addDoc,
   Timestamp,
+  getDocs,
+  query,
+  orderBy,
+  limit,
 } = require("firebase/firestore"); // Use full Firestore package
 const {
   getAuth,
@@ -26,7 +30,7 @@ const firebaseConfig = require("./firebase"); // Import the configuration data
 const dotenv = require("dotenv");
 dotenv.config();
 
-const limit = require("express-limit").limit;
+const limit_req = require("express-limit").limit;
 
 const app = express();
 
@@ -66,7 +70,7 @@ function ensureAuthenticated(req, res, next) {
 
 app.get(
   "/",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -76,7 +80,7 @@ app.get(
 );
 app.get(
   "/about",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -87,7 +91,7 @@ app.get(
 
 app.get(
   "/wws",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -159,7 +163,7 @@ const services = [
 
 app.get(
   "/service-d",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -182,7 +186,7 @@ app.get(
 );
 app.get(
   "/projects",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -207,7 +211,7 @@ app.get(
 
 app.get(
   "/ic",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -218,7 +222,7 @@ app.get(
 
 app.get(
   "/contact",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -229,7 +233,7 @@ app.get(
 
 app.get(
   "/admin",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -238,8 +242,8 @@ app.get(
     const pg = req.query.pg;
     const action = req.query.action;
     const imgURL = req.query.imgurl;
+    const page = req.query.page;
     console.log(req.query);
-    console.log(req.file);
 
     if (pg != undefined) {
       if (pg == "Gallery") {
@@ -255,14 +259,98 @@ app.get(
           pg: pg,
           urls: urls,
         });
+      } else if (pg == "Quotes") {
+        let quoteList = [];
+        // const snapshot = await getDocs(collection(db, "quotes"));
+        const q = query(
+          collection(db, "quotes"),
+          orderBy("timestamp", "desc"),
+          limit(20)
+        );
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc) => {
+          let data = doc.data();
+          let time = secondsToDate(data.timestamp.seconds);
+          quoteList.push({
+            id: doc.id,
+            email: data.email,
+            name: data.name,
+            timestamp: time,
+            material: data.material,
+            message: data.message,
+            phone: data.phone,
+          });
+        });
+
+        res.render("admin", {
+          activePage: "admin",
+          logout: true,
+          pg: pg,
+          quoteList: quoteList,
+        });
+      } else if (pg == "Messages") {
+        let messageList = [];
+        // const snapshot = await getDocs(collection(db, "quotes"));
+        const q = query(
+          collection(db, "contact_us"),
+          orderBy("timestamp", "desc"),
+          limit(20)
+        );
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc) => {
+          let data = doc.data();
+          let time = secondsToDate(data.timestamp.seconds);
+          messageList.push({
+            id: doc.id,
+            email: data.email,
+            name: data.name,
+            timestamp: time,
+            material: data.material,
+            message: data.message,
+            phone: data.phone,
+          });
+        });
+        console.log(messageList);
+        res.render("admin", {
+          activePage: "admin",
+          logout: true,
+          pg: pg,
+          messageList: messageList,
+        });
+      } else if (pg == "Blog") {
+        res.render("admin", {
+          activePage: "admin",
+          logout: true,
+          pg: pg,
+        });
       }
     } else {
-      let urls = await getUrls();
+      let quoteList = [];
+      const q = query(
+        collection(db, "quotes"),
+        orderBy("timestamp", "desc"),
+        limit(20)
+      );
+      const snapshot = await getDocs(q);
+
+      snapshot.forEach((doc) => {
+        let data = doc.data();
+        let time = secondsToDate(data.timestamp.seconds);
+        quoteList.push({
+          id: doc.id,
+          email: data.email,
+          name: data.name,
+          timestamp: time,
+          material: data.material,
+          message: data.message,
+          phone: data.phone,
+        });
+      });
       res.render("admin", {
         activePage: "admin",
         logout: true,
-        pg: "Gallery",
-        urls: urls,
+        pg: "Quotes",
+        quoteList: quoteList,
       });
     }
   }
@@ -270,7 +358,7 @@ app.get(
 
 app.post(
   "/admin",
-  limit({
+  limit_req({
     max: 20, // 20 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -289,6 +377,14 @@ app.post(
 );
 
 // Helper Functions
+
+function secondsToDate(seconds) {
+  const milliseconds = seconds * 1000;
+  const date = new Date(milliseconds);
+  return date;
+}
+
+// TODO: Add Pagination to the function.
 async function getUrls() {
   const listRef = ref(storage, "Gallery");
   const URLS = [];
@@ -337,7 +433,7 @@ async function deleteImage(url) {
     });
 }
 
-async function uploadImage(data,name) {
+async function uploadImage(data, name) {
   const storageRef = ref(storage, `Gallery/${name}`);
 
   await uploadBytes(storageRef, data)
@@ -349,14 +445,14 @@ async function uploadImage(data,name) {
     })
     .catch((error) => {
       console.error("Error uploading file to Firebase Storage:", error);
-      return error
+      return error;
     });
 }
 // End of Helper Functions
 
 app.get(
   "/login",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -368,7 +464,7 @@ app.get(
 // Handle login form submission
 app.post(
   "/login",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -399,7 +495,7 @@ app.post(
 
 app.get(
   "/logout",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -420,7 +516,7 @@ app.get(
 
 app.post(
   "/submit-quote",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -505,7 +601,7 @@ app.post(
 
 app.post(
   "/contact-us",
-  limit({
+  limit_req({
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
@@ -564,7 +660,7 @@ app.post(
 
 // app.get(
 //   "/test",
-//   limit({
+//   limit_req({
 //     max: 10, // 10 requests
 //     period: 60 * 1000, // per minute (60 seconds)
 //   }),
