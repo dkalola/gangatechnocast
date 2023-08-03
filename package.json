@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@firebase/auth": "^1.1.0",
-    "@firebase/firestore": "^4.1.0",
+    "@firebase/firestore": "^2.3.8",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
