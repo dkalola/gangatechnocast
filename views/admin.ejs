@@ -25,9 +25,13 @@
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <!-- Template Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+
+  <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
   <!-- =======================================================
   * Template Name: UpConstruction
@@ -69,7 +73,8 @@
               <a href="/admin?pg=Quotes" class="<%= pg === 'Quotes' ? 'active' : '' %>">Quotes</a>
               <a href="/admin?pg=Gallery" class="<%= pg === 'Gallery' ? 'active' : '' %>">Gallery</a>
               <a href="/admin?pg=Messages" class="<%= pg === 'Messages' ? 'active' : '' %>">Messages</a>
-              <a href="/admin?pg=Blog" class="<%= pg === 'Blog' ? 'active' : '' %>">Blog</a>
+              <a href="/admin?pg=Blog" class="<%= pg === 'Blog' ? 'active' : '' %>">Create Blog</a>
+              <a href="/admin?pg=VBlog" class="<%= pg === 'VBlog' ? 'active' : '' %>">View All Blogs</a>
             </div>
          </div>
 
@@ -87,6 +92,9 @@
             <% } else if (pg == "Blog") { %>
               <!-- Code to be executed if the condition is false -->
               <%- include('admin_blog') %>
+            <% } else if (pg == "VBlog") { %>
+              <!-- Code to be executed if the condition is false -->
+              <%- include('admin_vblog') %>
             <% } else { %>
               <!-- Code to be executed if the condition is false -->
             <% } %>
@@ -122,11 +130,12 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 
+  <!-- Tiny Script -->
+  <script src="https://cdn.tiny.cloud/1/gn0jxl7c4ru4q6vhpqdqbolsc7vvs0mhw5q401gdz3lwrwah/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
  <script>
     // Get the file input element
     const fileInput = document.getElementById('file');
@@ -162,6 +171,105 @@
           console.error('Error uploading file:', error);
         });
       }
+    });
+  </script>
+
+
+<!-- <script>
+  // Add an event listener to the form submit button
+  document.getElementById("blogsubmit").addEventListener("click", function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    
+    // Get the form data
+    const form = document.getElementById("uploadForm");
+    // Create a new FormData object and append the Blob to it
+        const formData1 = new FormData(form);
+
+        console.log(formData1.values())
+
+        // Send the FormData object to the backend using Fetch API or XMLHttpRequest
+        fetch('/blogpost', {
+          method: 'POST',
+          body: formData1
+        })
+        .then((response) => {
+          if (response.ok) {
+            console.log('File uploaded successfully.');
+            // location.reload();
+          } else {
+            console.error('Error uploading file:', response.status);
+          }
+        })
+        .catch((error) => {
+          console.error('Error uploading file:', error);
+        });
+
+  
+  });
+</script> -->
+
+
+
+
+
+
+
+
+
+
+ <!-- <script>
+    // Get the file input element
+    const button = document.getElementById('blogsubmit');
+    
+
+
+    // Add an event listener to the file input to handle the file selection
+    blogsubmit.addEventListener('click', (event) => {
+      const FileName = document.getElementById('imageName');
+      const file = event.target.files[0];
+      if (file) {
+        // Convert the file to a Blob
+        const blob = new Blob([file], { type: file.type });
+
+        // Create a new FormData object and append the Blob to it
+        const formData = new FormData();
+        formData.append('file', blob, FileName.value);
+
+        // Send the FormData object to the backend using Fetch API or XMLHttpRequest
+        fetch('/blogpost', {
+          method: 'POST',
+          body: formData
+        })
+        .then((response) => {
+          if (response.ok) {
+            console.log('File uploaded successfully.');
+            location.reload();
+          } else {
+            console.error('Error uploading file:', response.status);
+          }
+        })
+        .catch((error) => {
+          console.error('Error uploading file:', error);
+        });
+      }
+    });
+  </script> -->
+
+
+  <!-- Tiny Config -->
+  <script>
+    tinymce.init({
+      selector: 'textarea',
+      plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+      tinycomments_mode: 'embedded',
+      tinycomments_author: 'Author name',
+      mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+      ],
+      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
     });
   </script>
 

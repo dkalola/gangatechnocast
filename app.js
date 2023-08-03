@@ -16,6 +16,8 @@ const {
   addDoc,
   Timestamp,
   getDocs,
+  getDoc,
+  doc,
   query,
   orderBy,
   limit,
@@ -47,8 +49,9 @@ app.use(express.json()); // Parse JSON request bodies
 app.set("view engine", "ejs");
 app.use("/assets", express.static("public"));
 
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.raw({ type: "image/png" }));
 
 // Include the 'multer' package for handling file uploads
 const fileUpload = require("express-fileupload");
@@ -232,6 +235,47 @@ app.get(
 );
 
 app.get(
+  "/blog",
+  limit_req({
+    max: 10, // 10 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  async (req, res) => {
+    const q = query(
+      collection(db, "blogs"),
+      orderBy("timestamp", "desc"),
+      limit(20)
+    );
+
+    let blogs = await getBlogImageURL(q);
+    res.render("blog", { activePage: "blog", logout: false, blogs: blogs });
+  }
+);
+
+app.get(
+  "/blog_view",
+  limit_req({
+    max: 10, // 10 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  async (req, res) => {
+    const docRef = doc(db, "blogs", req.query.id);
+    const docSnap = await getDoc(docRef);
+    const data = docSnap.data();
+    const url = await getDownloadURL(ref(storage, data.img)).then((url) => {
+      data.img = url;
+      data.blog_tags = data.blog_tags.split(",");
+      data.timestamp = formatMonthAndDate(data.timestamp.seconds);
+      res.render("blog_view", {
+        activePage: "blog",
+        logout: false,
+        blogs: data,
+      });
+    });
+  }
+);
+
+app.get(
   "/admin",
   limit_req({
     max: 10, // 10 requests
@@ -252,7 +296,7 @@ app.get(
           await deleteImage(imgURL);
         }
         // get all links to the image
-        let urls = await getUrls();
+        let urls = await getUrls("Gallery");
         res.render("admin", {
           activePage: "admin",
           logout: true,
@@ -270,7 +314,7 @@ app.get(
         const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
           let data = doc.data();
-          let time = secondsToDate(data.timestamp.seconds);
+          let time = formatMonthAndDate(data.timestamp.seconds);
           quoteList.push({
             id: doc.id,
             email: data.email,
@@ -299,7 +343,7 @@ app.get(
         const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
           let data = doc.data();
-          let time = secondsToDate(data.timestamp.seconds);
+          let time = formatMonthAndDate(data.timestamp.seconds);
           messageList.push({
             id: doc.id,
             email: data.email,
@@ -323,6 +367,21 @@ app.get(
           logout: true,
           pg: pg,
         });
+      } else if (pg == "VBlog") {
+        const q = query(
+          collection(db, "blogs"),
+          orderBy("timestamp", "desc"),
+          limit(20)
+        );
+
+        let blogs = await getBlogImageURL(q);
+
+        res.render("admin", {
+          activePage: "admin",
+          logout: true,
+          pg: pg,
+          blogs: blogs,
+        });
       }
     } else {
       let quoteList = [];
@@ -335,7 +394,7 @@ app.get(
 
       snapshot.forEach((doc) => {
         let data = doc.data();
-        let time = secondsToDate(data.timestamp.seconds);
+        let time = formatMonthAndDate(data.timestamp.seconds);
         quoteList.push({
           id: doc.id,
           email: data.email,
@@ -356,6 +415,7 @@ app.get(
   }
 );
 
+// gallery image upload
 app.post(
   "/admin",
   limit_req({
@@ -363,7 +423,6 @@ app.post(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   ensureAuthenticated,
-  express.raw({ type: "image/png" }),
   async (req, res) => {
     // Access the file u.file
     const fileData = req.files.file.data;
@@ -376,7 +435,117 @@ app.post(
   }
 );
 
+app.post(
+  "/blogpost",
+  limit_req({
+    max: 20, // 20 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  ensureAuthenticated,
+  async (req, res) => {
+    // Access the file u.file
+    const fileData = req.files.file.data;
+
+    // let status = await uploadImage(fileData, req.files.file.name);
+
+    const storageRef = ref(storage, `Blogs/${req.files.file.name}`);
+
+    const uploadImage = await uploadBytes(storageRef, fileData)
+      .then((snapshot) => {
+        console.log("File uploaded to Firebase Storage!");
+        // Optionally, you can remove the file from the server after uploading to Firebase Storage
+        // fs.unlinkSync(file.path);
+        const blogpost = {
+          img: `Blogs/${req.files.file.name}`,
+          blog_title: req.body.bt,
+          blog_subtitle: req.body.st,
+          blog_body: req.body.body,
+          blog_tags: req.body.tags,
+          blog_group: req.body.group,
+        };
+        blogpost.timestamp = Timestamp.now();
+        console.log(blogpost);
+
+        const quotesCollection = collection(db, "blogs");
+
+        // Write the data to Firestore using the `add` method, which returns a promise
+        const docRef = addDoc(quotesCollection, blogpost)
+          .then(() => {
+            res.redirect("/admin");
+          })
+          .catch((error) => {
+            res.sendStatus(404).send({ message: error });
+          });
+      })
+      .catch((error) => {
+        console.error("Error uploading file to Firebase Storage:", error);
+        res.sendStatus(404).send({ message: error });
+      });
+  }
+);
+
 // Helper Functions
+
+async function getBlogImageURL(q) {
+  const snapshot = await getDocs(q);
+
+  // Create an array to hold the Promise for each download URL
+  const downloadURLPromises = snapshot.docs.map(async (doc) => {
+    let data = doc.data();
+    try {
+      const url = await getDownloadURL(ref(storage, data.img));
+      let time = formatMonthAndDate(data.timestamp.seconds);
+      return {
+        id: doc.id,
+        img: url,
+        blog_body: data.blog_body,
+        timestamp: time,
+        blog_subtitle: data.blog_subtitle,
+        blog_title: data.blog_title,
+        blog_tags: data.blog_tags.split(","),
+        blog_group: data.blog_group,
+      };
+    } catch (error) {
+      // Handle any errors when retrieving the download URL
+      console.error("Error getting download URL:", error);
+      return null;
+    }
+  });
+
+  // Wait for all the download URL promises to resolve
+  const blogs = await Promise.all(downloadURLPromises);
+
+  // Filter out any null values in case of errors
+  return blogs.filter((blog) => blog !== null);
+}
+
+function secondsToDate(seconds) {
+  const milliseconds = seconds * 1000;
+  return new Date(milliseconds);
+}
+
+function formatMonthAndDate(date1) {
+  const date = secondsToDate(date1);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const month = monthNames[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
+}
 
 function secondsToDate(seconds) {
   const milliseconds = seconds * 1000;
@@ -385,8 +554,8 @@ function secondsToDate(seconds) {
 }
 
 // TODO: Add Pagination to the function.
-async function getUrls() {
-  const listRef = ref(storage, "Gallery");
+async function getUrls(path) {
+  const listRef = ref(storage, path);
   const URLS = [];
 
   try {
@@ -441,6 +610,7 @@ async function uploadImage(data, name) {
       console.log("File uploaded to Firebase Storage!");
       // Optionally, you can remove the file from the server after uploading to Firebase Storage
       // fs.unlinkSync(file.path);
+      console.log(snapshot);
       return true;
     })
     .catch((error) => {
@@ -658,45 +828,7 @@ app.post(
   }
 );
 
-// app.get(
-//   "/test",
-//   limit_req({
-//     max: 10, // 10 requests
-//     period: 60 * 1000, // per minute (60 seconds)
-//   }),
-//   async (req, res) => {
-//     const data = {
-//       service_id: process.env.SERVICE_ID,
-//       template_id: "template_fowxi8q",
-//       user_id: process.env.USER_ID,
-//       template_params: {
-//         reply_to: "divyanshukalola88@gmail.com",
-//         to_name: "Divyanshu Kalola",
-//         message:
-//           "We hope this email finds you well. Thank you for reaching out to us. We are thrilled that you have chosen to connect with Ganga Technocast.\n\nAt Ganga Technocast, we take immense pride in delivering precision-engineered casting solutions to meet our clients' unique requirements. Your interest in our services means a lot to us, and we are committed to providing you with the best possible assistance throughout your casting journey.\n\nWe have received your inquiry, and our dedicated team is already working to address your specific needs. Rest assured, we will spare no effort to offer tailored solutions and ensure your experience with us is seamless and productive.\n\nAs a leading investment casting firm, we combine cutting-edge technology and expert craftsmanship to deliver components of exceptional quality and accuracy. Whether you require custom casting solutions or material analysis, we have the expertise to meet your demands.\n\nOne of our casting specialists will be in touch with you shortly to discuss your project in detail and provide further information. If you have any immediate questions or concerns, feel free to contact us at [Your Contact Number] during our business hours.\n\nThank you once again for considering Ganga Technocast as your investment casting partner. We value your trust and look forward to forging a successful collaboration with you.\n\nWarm regards,",
-//       },
-//       accessToken: process.env.ACCESS_TOCKEN,
-//     };
-//     try {
-//       // Make a POST request to the emailjs API
-//       axios
-//         .post("https://api.emailjs.com/api/v1.0/email/send", data)
-//         .then((response) => {
-//           console.log("Email sent successfully!", response.data);
-//           res.json({ message: "Your mail is sent!" });
-//         })
-//         .catch((error) => {
-//           console.error("Error sending email:", error.response.data);
-//           res.status(500).json({ error: "Oops, something went wrong!" });
-//         });
-//     } catch (error) {
-//       console.error("Error adding document: ", error);
-//       res
-//         .status(500)
-//         .json({ success: false, message: "Error adding document" });
-//     }
-//   }
-// );
+
 
 
 
