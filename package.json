@@ -19,8 +19,7 @@
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
     "express-limit": "^1.0.0",
-    "firebase": "^10.1.0",
-    "multer": "^1.4.5-lts.1"
+    "firebase": "^10.1.0"
   },
   "devDependencies": {
     "eslint": "^8.46.0"
