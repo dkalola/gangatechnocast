@@ -20,7 +20,8 @@
     "express": "^4.18.2",
     "express-fileupload": "^1.4.0",
     "express-limit": "^1.0.0",
-    "firebase": "^10.1.0"
+    "firebase": "^10.1.0",
+    "protobufjs": "^7.2.4"
   },
   "devDependencies": {
     "eslint": "^8.46.0",
