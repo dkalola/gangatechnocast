@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "snyk": "snyk test --all-projects --severity-threshold=high"
   },
   "keywords": [],
   "author": "",
