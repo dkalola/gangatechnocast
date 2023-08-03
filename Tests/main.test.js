@@ -6,15 +6,6 @@ afterAll((done) => {
   server.close(done);
 });
 
-// Define a sample service for testing
-const sampleService = {
-  id: "1",
-  name: "Sample Service",
-  description: "This is a sample service",
-};
-
-
-
 
 describe("Test routes", () => {
   test("GET / should return status code 200 and render the home page", async () => {
