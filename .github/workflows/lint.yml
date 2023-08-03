@@ -23,3 +23,15 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint .
+
+  deploy:
+    name: Deploy to Render.com
+    needs: lint # Wait for the 'lint' job to finish before triggering the 'deploy' job
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render.com deploy hook
+        env: # Define an environment variable to store the secret value
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }} # Use the name of the secret you created
+        run: curl -X POST $RENDER_DEPLOY_HOOK # Use the environment variable to access the secret value
