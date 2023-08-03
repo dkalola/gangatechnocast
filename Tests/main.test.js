@@ -1,5 +1,5 @@
 const request = require("supertest");
-const { app, server, getUrls } = require("../app");
+const { app, server } = require("../app");
 
 // Close the server after all the tests have finished
 afterAll((done) => {
@@ -13,25 +13,8 @@ const sampleService = {
   description: "This is a sample service",
 };
 
-// Mock the services data (for the "/service-d" route)
-const services = [sampleService];
 
-// Mock the getUrls function to return a predefined list of URLs for testing
-jest.mock("../app", () => {
-  return {
-    ...jest.requireActual("../app"), // Import and use the actual app module
-    getUrls: jest.fn(() => [
-      {
-        url: "https://example.com/image1.jpg",
-        path: "image1",
-      },
-      {
-        url: "https://example.com/image2.jpg",
-        path: "image2",
-      },
-    ]),
-  };
-});
+
 
 describe("Test routes", () => {
   test("GET / should return status code 200 and render the home page", async () => {
