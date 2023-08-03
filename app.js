@@ -18,7 +18,6 @@ const {
   getDocs,
   getDoc,
   doc,
-  startAfter,
   query,
   orderBy,
   limit,
@@ -80,7 +79,7 @@ app.get(
   }),
   (req, res) => {
     res.render("home", { activePage: "home", logout: false });
-  },
+  }
 );
 app.get(
   "/about",
@@ -90,7 +89,7 @@ app.get(
   }),
   (req, res) => {
     res.render("about", { activePage: "about", logout: false });
-  },
+  }
 );
 
 app.get(
@@ -101,7 +100,7 @@ app.get(
   }),
   (req, res) => {
     res.render("services", { activePage: "services", logout: false });
-  },
+  }
 );
 
 const services = [
@@ -186,7 +185,7 @@ app.get(
         logout: false,
       });
     }
-  },
+  }
 );
 app.get(
   "/projects",
@@ -210,7 +209,7 @@ app.get(
       logout: false,
       urls: urls,
     });
-  },
+  }
 );
 
 app.get(
@@ -221,7 +220,7 @@ app.get(
   }),
   (req, res) => {
     res.render("ic", { activePage: "ic", logout: false });
-  },
+  }
 );
 
 app.get(
@@ -232,7 +231,7 @@ app.get(
   }),
   (req, res) => {
     res.render("contact", { activePage: "contact", logout: false });
-  },
+  }
 );
 
 app.get(
@@ -245,7 +244,7 @@ app.get(
     const q = query(
       collection(db, "blogs"),
       orderBy("timestamp", "desc"),
-      limit(20),
+      limit(20)
     );
     let blogs = await getBlogImageURL(q);
     res.render("blog", {
@@ -253,7 +252,7 @@ app.get(
       logout: false,
       blogs: blogs[0],
     });
-  },
+  }
 );
 
 app.get(
@@ -277,7 +276,7 @@ app.get(
     } catch {
       res.redirect("/blog");
     }
-  },
+  }
 );
 
 app.get(
@@ -291,7 +290,7 @@ app.get(
     const pg = req.query.pg;
     const action = req.query.action;
     const imgURL = req.query.imgurl;
-    const page = req.query.page;
+
     console.log(req.query);
 
     if (pg != undefined) {
@@ -314,7 +313,7 @@ app.get(
         const q = query(
           collection(db, "quotes"),
           orderBy("timestamp", "desc"),
-          limit(20),
+          limit(20)
         );
         const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
@@ -343,7 +342,7 @@ app.get(
         const q = query(
           collection(db, "contact_us"),
           orderBy("timestamp", "desc"),
-          limit(20),
+          limit(20)
         );
         const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
@@ -376,7 +375,7 @@ app.get(
         const q = query(
           collection(db, "blogs"),
           orderBy("timestamp", "desc"),
-          limit(20),
+          limit(20)
         );
 
         let blogs = await getBlogImageURL(q);
@@ -393,7 +392,7 @@ app.get(
       const q = query(
         collection(db, "quotes"),
         orderBy("timestamp", "desc"),
-        limit(20),
+        limit(20)
       );
       const snapshot = await getDocs(q);
 
@@ -417,7 +416,7 @@ app.get(
         quoteList: quoteList,
       });
     }
-  },
+  }
 );
 
 // gallery image upload
@@ -437,7 +436,7 @@ app.post(
     } else {
       res.sendStatus(200).send(status);
     }
-  },
+  }
 );
 
 app.post(
@@ -455,42 +454,42 @@ app.post(
 
     const storageRef = ref(storage, `Blogs/${req.files.file.name}`);
 
-    const uploadImage = await uploadBytes(storageRef, fileData)
-      .then(async (snapshot) => {
+    await uploadBytes(storageRef, fileData)
+      .then(async () => {
         console.log("File uploaded to Firebase Storage!");
         // Optionally, you can remove the file from the server after uploading to Firebase Storage
         // fs.unlinkSync(file.path);
-        const url = await getDownloadURL(
-          ref(storage, `Blogs/${req.files.file.name}`),
-        ).then((url) => {
-          const blogpost = {
-            img: url,
-            blog_title: req.body.bt,
-            blog_subtitle: req.body.st,
-            blog_body: req.body.body,
-            blog_tags: req.body.tags,
-            blog_group: req.body.group,
-          };
-          blogpost.timestamp = Timestamp.now();
-          console.log(blogpost);
+        await getDownloadURL(ref(storage, `Blogs/${req.files.file.name}`)).then(
+          (url) => {
+            const blogpost = {
+              img: url,
+              blog_title: req.body.bt,
+              blog_subtitle: req.body.st,
+              blog_body: req.body.body,
+              blog_tags: req.body.tags,
+              blog_group: req.body.group,
+            };
+            blogpost.timestamp = Timestamp.now();
+            console.log(blogpost);
 
-          const quotesCollection = collection(db, "blogs");
+            const quotesCollection = collection(db, "blogs");
 
-          // Write the data to Firestore using the `add` method, which returns a promise
-          const docRef = addDoc(quotesCollection, blogpost)
-            .then(() => {
-              res.redirect("/admin");
-            })
-            .catch((error) => {
-              res.sendStatus(404).send({ message: error });
-            });
-        });
+            // Write the data to Firestore using the `add` method, which returns a promise
+            addDoc(quotesCollection, blogpost)
+              .then(() => {
+                res.redirect("/admin");
+              })
+              .catch((error) => {
+                res.sendStatus(404).send({ message: error });
+              });
+          }
+        );
       })
       .catch((error) => {
         console.error("Error uploading file to Firebase Storage:", error);
         res.sendStatus(404).send({ message: error });
       });
-  },
+  }
 );
 
 // Helper Functions
@@ -558,11 +557,7 @@ function formatMonthAndDate(date1) {
   return `${month} ${day}, ${year}`;
 }
 
-function secondsToDate(seconds) {
-  const milliseconds = seconds * 1000;
-  const date = new Date(milliseconds);
-  return date;
-}
+
 
 // TODO: Add Pagination to the function.
 async function getUrls(path) {
