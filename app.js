@@ -18,6 +18,7 @@ const {
   getDocs,
   getDoc,
   doc,
+  startAfter,
   query,
   orderBy,
   limit,
@@ -246,9 +247,12 @@ app.get(
       orderBy("timestamp", "desc"),
       limit(20)
     );
-
     let blogs = await getBlogImageURL(q);
-    res.render("blog", { activePage: "blog", logout: false, blogs: blogs });
+    res.render("blog", {
+      activePage: "blog",
+      logout: false,
+      blogs: blogs[0],
+    });
   }
 );
 
@@ -259,11 +263,10 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
-    const docRef = doc(db, "blogs", req.query.id);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-    const url = await getDownloadURL(ref(storage, data.img)).then((url) => {
-      data.img = url;
+    try {
+      const docRef = doc(db, "blogs", req.query.id);
+      const docSnap = await getDoc(docRef);
+      const data = docSnap.data();
       data.blog_tags = data.blog_tags.split(",");
       data.timestamp = formatMonthAndDate(data.timestamp.seconds);
       res.render("blog_view", {
@@ -271,7 +274,9 @@ app.get(
         logout: false,
         blogs: data,
       });
-    });
+    } catch {
+      res.redirect("/blog");
+    }
   }
 );
 
@@ -380,7 +385,7 @@ app.get(
           activePage: "admin",
           logout: true,
           pg: pg,
-          blogs: blogs,
+          blogs: blogs[0],
         });
       }
     } else {
@@ -451,31 +456,35 @@ app.post(
     const storageRef = ref(storage, `Blogs/${req.files.file.name}`);
 
     const uploadImage = await uploadBytes(storageRef, fileData)
-      .then((snapshot) => {
+      .then(async (snapshot) => {
         console.log("File uploaded to Firebase Storage!");
         // Optionally, you can remove the file from the server after uploading to Firebase Storage
         // fs.unlinkSync(file.path);
-        const blogpost = {
-          img: `Blogs/${req.files.file.name}`,
-          blog_title: req.body.bt,
-          blog_subtitle: req.body.st,
-          blog_body: req.body.body,
-          blog_tags: req.body.tags,
-          blog_group: req.body.group,
-        };
-        blogpost.timestamp = Timestamp.now();
-        console.log(blogpost);
+        const url = await getDownloadURL(
+          ref(storage, `Blogs/${req.files.file.name}`)
+        ).then((url) => {
+          const blogpost = {
+            img: url,
+            blog_title: req.body.bt,
+            blog_subtitle: req.body.st,
+            blog_body: req.body.body,
+            blog_tags: req.body.tags,
+            blog_group: req.body.group,
+          };
+          blogpost.timestamp = Timestamp.now();
+          console.log(blogpost);
 
-        const quotesCollection = collection(db, "blogs");
+          const quotesCollection = collection(db, "blogs");
 
-        // Write the data to Firestore using the `add` method, which returns a promise
-        const docRef = addDoc(quotesCollection, blogpost)
-          .then(() => {
-            res.redirect("/admin");
-          })
-          .catch((error) => {
-            res.sendStatus(404).send({ message: error });
-          });
+          // Write the data to Firestore using the `add` method, which returns a promise
+          const docRef = addDoc(quotesCollection, blogpost)
+            .then(() => {
+              res.redirect("/admin");
+            })
+            .catch((error) => {
+              res.sendStatus(404).send({ message: error });
+            });
+        });
       })
       .catch((error) => {
         console.error("Error uploading file to Firebase Storage:", error);
@@ -493,11 +502,10 @@ async function getBlogImageURL(q) {
   const downloadURLPromises = snapshot.docs.map(async (doc) => {
     let data = doc.data();
     try {
-      const url = await getDownloadURL(ref(storage, data.img));
       let time = formatMonthAndDate(data.timestamp.seconds);
       return {
         id: doc.id,
-        img: url,
+        img: data.img,
         blog_body: data.blog_body,
         timestamp: time,
         blog_subtitle: data.blog_subtitle,
@@ -516,7 +524,10 @@ async function getBlogImageURL(q) {
   const blogs = await Promise.all(downloadURLPromises);
 
   // Filter out any null values in case of errors
-  return blogs.filter((blog) => blog !== null);
+  return [
+    blogs.filter((blog) => blog !== null),
+    snapshot.docs[snapshot.docs.length - 1],
+  ];
 }
 
 function secondsToDate(seconds) {
