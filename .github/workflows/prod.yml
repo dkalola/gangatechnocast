@@ -28,6 +28,8 @@ jobs:
         # run: npm test
 
       - name: Run Snyk test
+        env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npm run snyk
 
   deploy:
