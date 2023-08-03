@@ -9,6 +9,6 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
-  "ignorePatterns": ["node_modules/", "public/"],
+  "ignorePatterns": ["node_modules/", "public/", "Tests/"],
   "rules": {}
 }
