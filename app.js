@@ -80,7 +80,7 @@ app.get(
   }),
   (req, res) => {
     res.render("home", { activePage: "home", logout: false });
-  }
+  },
 );
 app.get(
   "/about",
@@ -90,7 +90,7 @@ app.get(
   }),
   (req, res) => {
     res.render("about", { activePage: "about", logout: false });
-  }
+  },
 );
 
 app.get(
@@ -101,7 +101,7 @@ app.get(
   }),
   (req, res) => {
     res.render("services", { activePage: "services", logout: false });
-  }
+  },
 );
 
 const services = [
@@ -186,7 +186,7 @@ app.get(
         logout: false,
       });
     }
-  }
+  },
 );
 app.get(
   "/projects",
@@ -210,7 +210,7 @@ app.get(
       logout: false,
       urls: urls,
     });
-  }
+  },
 );
 
 app.get(
@@ -221,7 +221,7 @@ app.get(
   }),
   (req, res) => {
     res.render("ic", { activePage: "ic", logout: false });
-  }
+  },
 );
 
 app.get(
@@ -232,7 +232,7 @@ app.get(
   }),
   (req, res) => {
     res.render("contact", { activePage: "contact", logout: false });
-  }
+  },
 );
 
 app.get(
@@ -245,7 +245,7 @@ app.get(
     const q = query(
       collection(db, "blogs"),
       orderBy("timestamp", "desc"),
-      limit(20)
+      limit(20),
     );
     let blogs = await getBlogImageURL(q);
     res.render("blog", {
@@ -253,7 +253,7 @@ app.get(
       logout: false,
       blogs: blogs[0],
     });
-  }
+  },
 );
 
 app.get(
@@ -277,7 +277,7 @@ app.get(
     } catch {
       res.redirect("/blog");
     }
-  }
+  },
 );
 
 app.get(
@@ -314,7 +314,7 @@ app.get(
         const q = query(
           collection(db, "quotes"),
           orderBy("timestamp", "desc"),
-          limit(20)
+          limit(20),
         );
         const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
@@ -343,7 +343,7 @@ app.get(
         const q = query(
           collection(db, "contact_us"),
           orderBy("timestamp", "desc"),
-          limit(20)
+          limit(20),
         );
         const snapshot = await getDocs(q);
         snapshot.forEach((doc) => {
@@ -376,7 +376,7 @@ app.get(
         const q = query(
           collection(db, "blogs"),
           orderBy("timestamp", "desc"),
-          limit(20)
+          limit(20),
         );
 
         let blogs = await getBlogImageURL(q);
@@ -393,7 +393,7 @@ app.get(
       const q = query(
         collection(db, "quotes"),
         orderBy("timestamp", "desc"),
-        limit(20)
+        limit(20),
       );
       const snapshot = await getDocs(q);
 
@@ -417,7 +417,7 @@ app.get(
         quoteList: quoteList,
       });
     }
-  }
+  },
 );
 
 // gallery image upload
@@ -437,7 +437,7 @@ app.post(
     } else {
       res.sendStatus(200).send(status);
     }
-  }
+  },
 );
 
 app.post(
@@ -461,7 +461,7 @@ app.post(
         // Optionally, you can remove the file from the server after uploading to Firebase Storage
         // fs.unlinkSync(file.path);
         const url = await getDownloadURL(
-          ref(storage, `Blogs/${req.files.file.name}`)
+          ref(storage, `Blogs/${req.files.file.name}`),
         ).then((url) => {
           const blogpost = {
             img: url,
@@ -490,7 +490,7 @@ app.post(
         console.error("Error uploading file to Firebase Storage:", error);
         res.sendStatus(404).send({ message: error });
       });
-  }
+  },
 );
 
 // Helper Functions
@@ -639,7 +639,7 @@ app.get(
   }),
   (req, res) => {
     res.render("login", { activePage: "login", logout: false });
-  }
+  },
 );
 
 // Handle login form submission
@@ -671,7 +671,7 @@ app.post(
         // Redirect the user back to the login page with an error message (if needed)
         res.redirect("/login?error=" + encodeURIComponent(error.message));
       });
-  }
+  },
 );
 
 app.get(
@@ -692,7 +692,7 @@ app.get(
         console.error("Logout error:", error.message);
         res.redirect("/admin"); // Redirect to dashboard or any other page with an error message
       });
-  }
+  },
 );
 
 app.post(
@@ -777,7 +777,7 @@ app.post(
         .status(500)
         .json({ success: false, message: "Error adding document" });
     }
-  }
+  },
 );
 
 app.post(
@@ -836,16 +836,8 @@ app.post(
         .status(500)
         .json({ success: false, message: "Error adding document" });
     }
-  }
+  },
 );
-
-
-
-
-
-
-
-
 
 const port = 3000;
 app.listen(port, () => {
