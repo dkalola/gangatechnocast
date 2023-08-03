@@ -196,8 +196,6 @@ app.get(
   async (req, res) => {
     let urls = await getUrls();
 
-    console.log(urls);
-
     for (let i = 0; i < urls.length; i++) {
       const item = urls[i];
       const pathParts = item.path.split(".");
@@ -557,8 +555,6 @@ function formatMonthAndDate(date1) {
   return `${month} ${day}, ${year}`;
 }
 
-
-
 // TODO: Add Pagination to the function.
 async function getUrls(path) {
   const listRef = ref(storage, path);
@@ -634,7 +630,7 @@ app.get(
   }),
   (req, res) => {
     res.render("login", { activePage: "login", logout: false });
-  },
+  }
 );
 
 // Handle login form submission
@@ -666,7 +662,7 @@ app.post(
         // Redirect the user back to the login page with an error message (if needed)
         res.redirect("/login?error=" + encodeURIComponent(error.message));
       });
-  },
+  }
 );
 
 app.get(
@@ -683,11 +679,10 @@ app.get(
         console.log("User logged out.");
         res.redirect("/login");
       })
-      .catch((error) => {
-        console.error("Logout error:", error.message);
+      .catch(() => {
         res.redirect("/admin"); // Redirect to dashboard or any other page with an error message
       });
-  },
+  }
 );
 
 app.post(
@@ -772,7 +767,7 @@ app.post(
         .status(500)
         .json({ success: false, message: "Error adding document" });
     }
-  },
+  }
 );
 
 app.post(
@@ -831,10 +826,12 @@ app.post(
         .status(500)
         .json({ success: false, message: "Error adding document" });
     }
-  },
+  }
 );
 
 const port = 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
+module.exports = { app, server, getUrls };
