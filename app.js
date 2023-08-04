@@ -217,13 +217,15 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
-    let urls = await getUrls();
+    let urls = await getUrls("Gallery");
 
     for (let i = 0; i < urls.length; i++) {
       const item = urls[i];
       const pathParts = item.path.split(".");
       urls[i].path = pathParts[0];
     }
+
+    console.log(urls);
 
     res.render("projects", {
       activePage: "projects",
