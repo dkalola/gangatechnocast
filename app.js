@@ -100,8 +100,15 @@ app.get(
     max: 10, // 10 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
-  (req, res) => {
-    res.render("home", { activePage: "home", logout: false });
+  async (req, res) => {
+    let urls = await getUrls("Gallery");
+
+    for (let i = 0; i < urls.length; i++) {
+      const item = urls[i];
+      const pathParts = item.path.split(".");
+      urls[i].path = pathParts[0];
+    }
+    res.render("home", { activePage: "home", logout: false, urls: urls });
   }
 );
 app.get(
