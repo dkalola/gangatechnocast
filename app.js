@@ -1,7 +1,6 @@
 const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
-const helmet = require("helmet");
 const Sentry = require("@sentry/node");
 const { initializeApp } = require("firebase/app");
 const {
@@ -73,24 +72,7 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "img-src": [
-        "'self'",
-        "https:",
-        "data:",
-        "firebasestorage.googleapis.com",
-      ], // Allow images from Firebase Storage URL
-      "script-src": [
-        "'self'",
-        "'unsafe-inline'", // Allow inline scripts (needed for TinyMCE)
-        "https://cdn.tiny.cloud", // Add the TinyMCE script source URL here
-      ],
-    },
-  })
-);
+
 
 Sentry.init({
   dsn: process.env.SENTRY_DNS,

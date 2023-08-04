@@ -22,7 +22,7 @@
     "express-fileupload": "^1.4.0",
     "express-limit": "^1.0.0",
     "firebase": "^10.1.0",
-    "helmet": "^7.0.0",
+
     "protobufjs": "^7.2.4"
   },
   "devDependencies": {
