@@ -83,6 +83,11 @@ app.use(
         "data:",
         "firebasestorage.googleapis.com",
       ], // Allow images from Firebase Storage URL
+      "script-src": [
+        "'self'",
+        "'unsafe-inline'", // Allow inline scripts (needed for TinyMCE)
+        "https://cdn.tiny.cloud", // Add the TinyMCE script source URL here
+      ],
     },
   })
 );
