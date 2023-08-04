@@ -1,6 +1,8 @@
 const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
+const helmet = require("helmet");
+const Sentry = require("@sentry/node");
 const { initializeApp } = require("firebase/app");
 const {
   getStorage,
@@ -70,6 +72,28 @@ function ensureAuthenticated(req, res, next) {
     res.redirect("/login");
   }
 }
+
+app.use(helmet());
+
+Sentry.init({
+  dsn: process.env.SENTRY_DNS,
+  integrations: [
+    // enable HTTP calls tracing
+    new Sentry.Integrations.Http({
+      tracing: true,
+    }),
+    // enable Express.js middleware tracing
+    new Sentry.Integrations.Express({
+      app,
+    }),
+  ],
+  // Performance Monitoring
+  tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!,
+});
+
+// Trace incoming requests
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 
 app.get(
   "/",
@@ -828,6 +852,8 @@ app.post(
     }
   }
 );
+// The error handler must be registered before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
 
 const port = 3000;
 const server = app.listen(port, () => {
