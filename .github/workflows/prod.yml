@@ -1,4 +1,4 @@
-name: ESLint
+name: check and deploy
 
 on:
   push:
