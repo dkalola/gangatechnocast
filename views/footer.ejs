@@ -156,18 +156,60 @@
   
   </script>
 
-  <div class="floating-banner text-center">
-    <i>You have Logged in as Administrator. You can select any text and submit a report to change. View reports <a href="/admin?pg=Edits">here</a>!</i>
+  <div class="floating-banner text-center" id="banner">
+    <i>You have Logged in as Administrator. You can select any text and submit a report to change. View reports <a href="/admin?pg=Edits">here</a>! <a type="button" id="Learn" class="btn btn-link">Learn More!</a></i>
     
+    <div class="row" style=" border-radius: 5px;" id="leanHow">
+      <div class="col mt-3">
+        <h4>How to use report tool!</h4>
+        <hr>
+        <div class="row mb-3 ">
+          <div class="col">
+            <img class="mb-2" src="assets/img/demo/img1.jpeg" alt="" height="300px">
+            <p>Select the text that you want to creat the report. </p>
+          </div>
+          <div class="col">
+            <img src="assets/img/demo/img2.jpeg" alt="" height="300px">
+            <p>Next Fillout the form. First field will allow you to change the text that you have selected. Second field is who is making this report and last is for your comments.</p>
+          </div>
+
+        </div>
+        <p><b>NOTE: </b>This will only work if you are using a PC. Mobile users I am sorry but this is not possible for them.</p>
+        
+        
+
+      </div>
+    </div>
   </div>
 
    <script>
     const floatingBanner = document.querySelector('.floating-banner');
-
+    
     // Show the banner after 5 seconds
     setTimeout(() => {
       floatingBanner.classList.add('show');
+
+      const learn = document.getElementById("Learn");
+      const learnHow = document.getElementById("leanHow");
+      let clicked = false;
+      learnHow.hidden = true;
+
+      learn.addEventListener("click",()=>{
+
+        if(clicked){
+          learn.innerText = "Learn More!";
+          learnHow.hidden = true;
+          clicked = false;
+        }else{
+          learn.innerText = "Close Learn More!";
+          clicked = true;
+          learnHow.hidden = false;
+        }
+      })
+
     }, 1000);
+    
+    
   </script>
 
 
