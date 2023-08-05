@@ -1,3 +1,173 @@
+    <!-- Dev step start -->
+  
+  <% if (user) { %>
+
+      <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Change Report</h2>
+            <p>You can submit your changes using this form.</p>
+            <!-- Additional form fields can be added here -->
+            <form id="comment-form" class="php-email-form">
+
+                <div class="row">
+                  <div class="col-12">
+                    <h6>Your Selection:</h6>
+                    <p id="your_selection"></p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <h6>Update Your Selection:</h6>
+                    <textarea id="update_selection" class="form-control" name="comment" rows="5" required></textarea>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <h6>Who is commenting?</h6>
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Name" required>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <h6>Your comment?</h6>
+                    <textarea id="comment" class="form-control" name="comment" required></textarea>
+                  </div>
+                </div>
+
+                <br>
+              <button type="submit" class="btn btn-secondary">Submit</button>
+              <button type="button" class="btn btn-danger"id="cancel">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const mainElement = document.querySelector('body');
+        mainElement.id = 'selectable-text'; // Set the new id value
+
+
+        const selectableText = document.getElementById('selectable-text');
+        const commentForm = document.getElementById('comment-form');
+        const submit = document.getElementById('submit');
+
+        // modal control
+        const modal = document.getElementById('myModal');
+        const closeBtn = document.querySelector('.close');
+        const cancel = document.getElementById('cancel');
+        let submitting = false; // Flag to track submission status
+
+        selectableText.addEventListener('mouseup', handleTextSelection);
+
+        closeBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            selectableText.addEventListener('mouseup', handleTextSelection);
+            commentForm.reset();
+            modal.style.display = 'none';
+        });
+
+        cancel.addEventListener('click', (event) => {
+            event.preventDefault();
+            selectableText.addEventListener('mouseup', handleTextSelection);
+            commentForm.reset();
+            modal.style.display = 'none';
+        });
+
+
+        function handleTextSelection(){
+          const selectedText = getSelectedText();
+          if (selectedText) {
+            selectableText.removeEventListener('mouseup', handleTextSelection);
+            modal.style.display = 'block';
+            openCommentForm( selectedText);
+          }
+        }
+        function openCommentForm(selectedText) {
+            if (submitting) {
+              return; // If submission is already in progress, do nothing
+            }
+            submitting = true; // Set the flag to indicate submission in progress
+
+          
+
+          document.getElementById("your_selection").innerText = selectedText;
+          document.getElementById("update_selection").innerText = selectedText;
+          
+          commentForm.addEventListener('submit', (event) => {
+            
+            event.preventDefault();
+            
+            const your_selection = document.getElementById('your_selection').innerText;
+            const update_selection = document.getElementById('update_selection').value;
+            const name = document.getElementById('name').value;
+            const comment = document.getElementById('comment').value;
+            
+            if (your_selection && update_selection && name && comment) {
+              const data = {
+                your_selection: your_selection,
+                update_selection: update_selection,
+                name: name,
+                comment: comment,
+                title: document.title,
+                url: window.location.href,
+              };
+              
+              submitComment(data);
+              commentForm.reset();
+            }
+          });
+        }
+
+
+
+        function getSelectedText() {
+          if (window.getSelection) {
+            return window.getSelection().toString();
+          }
+          return '';
+        }
+
+
+        function submitComment(data) {
+
+          fetch('/report_change', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+          .then(response => response.json())
+          .then(data => {
+            commentForm.reset();
+            
+            modal.style.display = 'none';
+          })
+          .catch(error => {
+            alert(error.message);
+          }).finally(() => {
+            selectableText.addEventListener('mouseup', handleTextSelection);
+            submitting = false; // Reset the flag after submission, whether success or failure
+          });
+        }
+
+    });
+
+  
+  </script>
+  <% } %>
+
+
+  <!-- Dev step end -->
+ 
+ 
+ 
+ 
  <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
 
@@ -29,7 +199,7 @@
               <li><a href="#">About us</a></li>
               <li><a href="#">Services</a></li>
               <li><a href="#">Terms of service</a></li>
-              <li><a href="#">Privacy policy</a></li>
+              <li><a href="#">Privacy policy</a></li> 
             </ul>
           </div><!-- End footer links column-->
 
@@ -87,3 +257,22 @@
 
   </footer>
   <!-- End Footer -->
+
+
+ <script src="https://cdn.tiny.cloud/1/gn0jxl7c4ru4q6vhpqdqbolsc7vvs0mhw5q401gdz3lwrwah/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+  <!-- Tiny Config -->
+  <script>
+    tinymce.init({
+      selector: 'textarea',
+      plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+      tinycomments_mode: 'embedded',
+      tinycomments_author: 'Author name',
+      mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+      ],
+      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
+    });
+  </script>

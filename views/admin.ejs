@@ -18,6 +18,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
+  
+
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -75,6 +77,7 @@
               <a href="/admin?pg=Messages" class="<%= pg === 'Messages' ? 'active' : '' %>">Messages</a>
               <a href="/admin?pg=Blog" class="<%= pg === 'Blog' ? 'active' : '' %>">Create Blog</a>
               <a href="/admin?pg=VBlog" class="<%= pg === 'VBlog' ? 'active' : '' %>">View All Blogs</a>
+              <a href="/admin?pg=Edits" class="<%= pg === 'Edits' ? 'active' : '' %>">Change Reports</a>
             </div>
          </div>
 
@@ -95,6 +98,9 @@
             <% } else if (pg == "VBlog") { %>
               <!-- Code to be executed if the condition is false -->
               <%- include('admin_vblog') %>
+            <% } else if (pg == "Edits") { %>
+              <!-- Code to be executed if the condition is false -->
+              <%- include('admin_edits') %>
             <% } else { %>
               <!-- Code to be executed if the condition is false -->
             <% } %>
@@ -125,7 +131,6 @@
   <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
@@ -174,87 +179,6 @@
     });
   </script>
 
-
-<!-- <script>
-  // Add an event listener to the form submit button
-  document.getElementById("blogsubmit").addEventListener("click", function (event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    
-    // Get the form data
-    const form = document.getElementById("uploadForm");
-    // Create a new FormData object and append the Blob to it
-        const formData1 = new FormData(form);
-
-        console.log(formData1.values())
-
-        // Send the FormData object to the backend using Fetch API or XMLHttpRequest
-        fetch('/blogpost', {
-          method: 'POST',
-          body: formData1
-        })
-        .then((response) => {
-          if (response.ok) {
-            console.log('File uploaded successfully.');
-            // location.reload();
-          } else {
-            console.error('Error uploading file:', response.status);
-          }
-        })
-        .catch((error) => {
-          console.error('Error uploading file:', error);
-        });
-
-  
-  });
-</script> -->
-
-
-
-
-
-
-
-
-
-
- <!-- <script>
-    // Get the file input element
-    const button = document.getElementById('blogsubmit');
-    
-
-
-    // Add an event listener to the file input to handle the file selection
-    blogsubmit.addEventListener('click', (event) => {
-      const FileName = document.getElementById('imageName');
-      const file = event.target.files[0];
-      if (file) {
-        // Convert the file to a Blob
-        const blob = new Blob([file], { type: file.type });
-
-        // Create a new FormData object and append the Blob to it
-        const formData = new FormData();
-        formData.append('file', blob, FileName.value);
-
-        // Send the FormData object to the backend using Fetch API or XMLHttpRequest
-        fetch('/blogpost', {
-          method: 'POST',
-          body: formData
-        })
-        .then((response) => {
-          if (response.ok) {
-            console.log('File uploaded successfully.');
-            location.reload();
-          } else {
-            console.error('Error uploading file:', response.status);
-          }
-        })
-        .catch((error) => {
-          console.error('Error uploading file:', error);
-        });
-      }
-    });
-  </script> -->
 
 
   <!-- Tiny Config -->

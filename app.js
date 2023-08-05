@@ -22,6 +22,7 @@ const {
   query,
   orderBy,
   limit,
+  deleteDoc,
 } = require("firebase/firestore"); // Use full Firestore package
 const {
   getAuth,
@@ -72,8 +73,6 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-
-
 Sentry.init({
   dsn: process.env.SENTRY_DNS,
   integrations: [
@@ -91,8 +90,9 @@ Sentry.init({
 });
 
 // Trace incoming requests
-app.use(Sentry.Handlers.requestHandler());
-app.use(Sentry.Handlers.tracingHandler());
+// UC
+// app.use(Sentry.Handlers.requestHandler());
+// app.use(Sentry.Handlers.tracingHandler());
 
 app.get(
   "/",
@@ -101,6 +101,7 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
+    const user = auth.currentUser;
     let urls = await getUrls("Gallery");
 
     for (let i = 0; i < urls.length; i++) {
@@ -108,7 +109,12 @@ app.get(
       const pathParts = item.path.split(".");
       urls[i].path = pathParts[0];
     }
-    res.render("home", { activePage: "home", logout: false, urls: urls });
+    res.render("home", {
+      activePage: "home",
+      logout: false,
+      urls: urls,
+      user: user != null ? user : false,
+    });
   }
 );
 app.get(
@@ -118,7 +124,12 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
-    res.render("about", { activePage: "about", logout: false });
+    const user = auth.currentUser;
+    res.render("about", {
+      activePage: "about",
+      logout: false,
+      user: user != null ? user : false,
+    });
   }
 );
 
@@ -129,7 +140,12 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
-    res.render("services", { activePage: "services", logout: false });
+    const user = auth.currentUser;
+    res.render("services", {
+      activePage: "services",
+      logout: false,
+      user: user != null ? user : false,
+    });
   }
 );
 
@@ -201,18 +217,24 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
+    const user = auth.currentUser;
     const serviceID = req.query.service;
     const service = services.find((service) => service.id === serviceID);
     if (!service) {
       // If the service is not found, you can handle the error or render an error page
       // res.status(404).send("Service not found");
-      res.render("services", { activePage: "services", logout: false });
+      res.render("services", {
+        activePage: "services",
+        logout: false,
+        user: user != null ? user : false,
+      });
     } else {
       // Render the service-details page with the corresponding service data
       res.render("service-details", {
         activePage: "services",
         data: service,
         logout: false,
+        user: user != null ? user : false,
       });
     }
   }
@@ -224,6 +246,7 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
+    const user = auth.currentUser;
     let urls = await getUrls("Gallery");
 
     for (let i = 0; i < urls.length; i++) {
@@ -232,12 +255,11 @@ app.get(
       urls[i].path = pathParts[0];
     }
 
-    console.log(urls);
-
     res.render("projects", {
       activePage: "projects",
       logout: false,
       urls: urls,
+      user: user != null ? user : false,
     });
   }
 );
@@ -249,7 +271,12 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
-    res.render("ic", { activePage: "ic", logout: false });
+    const user = auth.currentUser;
+    res.render("ic", {
+      activePage: "ic",
+      logout: false,
+      user: user != null ? user : false,
+    });
   }
 );
 
@@ -260,7 +287,12 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
-    res.render("contact", { activePage: "contact", logout: false });
+    const user = auth.currentUser;
+    res.render("contact", {
+      activePage: "contact",
+      logout: false,
+      user: user != null ? user : false,
+    });
   }
 );
 
@@ -271,6 +303,7 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
+    const user = auth.currentUser;
     const q = query(
       collection(db, "blogs"),
       orderBy("timestamp", "desc"),
@@ -281,6 +314,7 @@ app.get(
       activePage: "blog",
       logout: false,
       blogs: blogs[0],
+      user: user != null ? user : false,
     });
   }
 );
@@ -292,6 +326,7 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   async (req, res) => {
+    const user = auth.currentUser;
     try {
       const docRef = doc(db, "blogs", req.query.id);
       const docSnap = await getDoc(docRef);
@@ -302,6 +337,7 @@ app.get(
         activePage: "blog",
         logout: false,
         blogs: data,
+        user: user != null ? user : false,
       });
     } catch {
       res.redirect("/blog");
@@ -317,6 +353,7 @@ app.get(
   }),
   ensureAuthenticated,
   async (req, res) => {
+    const user = auth.currentUser;
     const pg = req.query.pg;
     const action = req.query.action;
     const imgURL = req.query.imgurl;
@@ -336,6 +373,7 @@ app.get(
           logout: true,
           pg: pg,
           urls: urls,
+          user: user != null ? user : false,
         });
       } else if (pg == "Quotes") {
         let quoteList = [];
@@ -365,6 +403,7 @@ app.get(
           logout: true,
           pg: pg,
           quoteList: quoteList,
+          user: user != null ? user : false,
         });
       } else if (pg == "Messages") {
         let messageList = [];
@@ -394,12 +433,45 @@ app.get(
           logout: true,
           pg: pg,
           messageList: messageList,
+          user: user != null ? user : false,
+        });
+      } else if (pg == "Edits") {
+        let repots = [];
+        // const snapshot = await getDocs(collection(db, "quotes"));
+        const q = query(
+          collection(db, "reports"),
+          orderBy("timestamp", "desc"),
+          limit(20)
+        );
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc) => {
+          let data = doc.data();
+          let time = formatMonthAndDate(data.timestamp.seconds);
+          repots.push({
+            id: doc.id,
+            name: data.name,
+            comment: data.comment,
+            timestamp: time,
+            title: data.title,
+            update_selection: data.update_selection,
+            your_selection: data.your_selection,
+            url: data.url,
+          });
+        });
+
+        res.render("admin", {
+          activePage: "admin",
+          logout: true,
+          pg: pg,
+          repots: repots,
+          user: user != null ? user : false,
         });
       } else if (pg == "Blog") {
         res.render("admin", {
           activePage: "admin",
           logout: true,
           pg: pg,
+          user: user != null ? user : false,
         });
       } else if (pg == "VBlog") {
         const q = query(
@@ -415,6 +487,7 @@ app.get(
           logout: true,
           pg: pg,
           blogs: blogs[0],
+          user: user != null ? user : false,
         });
       }
     } else {
@@ -444,6 +517,7 @@ app.get(
         logout: true,
         pg: "Quotes",
         quoteList: quoteList,
+        user: user != null ? user : false,
       });
     }
   }
@@ -500,7 +574,6 @@ app.post(
               blog_group: req.body.group,
             };
             blogpost.timestamp = Timestamp.now();
-            console.log(blogpost);
 
             const quotesCollection = collection(db, "blogs");
 
@@ -518,6 +591,53 @@ app.post(
       .catch((error) => {
         console.error("Error uploading file to Firebase Storage:", error);
         res.sendStatus(404).send({ message: error });
+      });
+  }
+);
+
+app.post(
+  "/report_change",
+  limit_req({
+    max: 20, // 20 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  ensureAuthenticated,
+  (req, res) => {
+    // Access the file u.file
+
+    const data = req.body;
+    data.timestamp = Timestamp.now();
+    const quotesCollection = collection(db, "reports");
+
+    // Write the data to Firestore using the `add` method, which returns a promise
+    addDoc(quotesCollection, data)
+      .then(() => {
+        res.status(200).send({ message: "Your change had been reported" });
+      })
+      .catch((error) => {
+        res.status(404).send({ message: error });
+      });
+  }
+);
+
+app.get(
+  "/delete_report",
+  limit_req({
+    max: 20, // 20 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  ensureAuthenticated,
+  async (req, res) => {
+    // Access the file u.file
+    console.log(req.query.id);
+
+    deleteDoc(doc(db, `reports/${req.query.id}`))
+      .then(() => {
+        res.redirect("/admin?pg=Edits");
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(404).send({ message: error });
       });
   }
 );
@@ -661,7 +781,12 @@ app.get(
     period: 60 * 1000, // per minute (60 seconds)
   }),
   (req, res) => {
-    res.render("login", { activePage: "login", logout: false });
+    const user = auth.currentUser;
+    res.render("login", {
+      activePage: "login",
+      logout: false,
+      user: user != null ? user : false,
+    });
   }
 );
 
@@ -708,7 +833,6 @@ app.get(
       .signOut()
       .then(() => {
         // User logged out successfully
-        console.log("User logged out.");
         res.redirect("/login");
       })
       .catch(() => {
@@ -861,7 +985,7 @@ app.post(
   }
 );
 // The error handler must be registered before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+// app.use(Sentry.Handlers.errorHandler());
 
 const port = 3000;
 const server = app.listen(port, () => {
