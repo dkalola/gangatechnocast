@@ -39,7 +39,7 @@
           <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">Contact</a></li>
           <% if (user) { %>
             <!-- Content to be displayed if the condition is true -->
-            <li style="color: white;"><%= user.email %></li>
+            <li style="color: white;"><a href="/admin"><%= user.email %></a></li>
           <% } %>
           <% if (logout) { %>
             <!-- Content to be displayed if the condition is true -->
