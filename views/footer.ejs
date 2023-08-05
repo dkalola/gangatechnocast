@@ -45,7 +45,7 @@
         </div>
     </div>
 
-  <script>
+  <script id="script">
 
     document.addEventListener('DOMContentLoaded', function() {
         const mainElement = document.querySelector('body');
@@ -65,22 +65,23 @@
         selectableText.addEventListener('mouseup', handleTextSelection);
 
         closeBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            selectableText.addEventListener('mouseup', handleTextSelection);
             commentForm.reset();
+            selectableText.addEventListener('mouseup', handleTextSelection);
             modal.style.display = 'none';
         });
 
         cancel.addEventListener('click', (event) => {
-            event.preventDefault();
-            selectableText.addEventListener('mouseup', handleTextSelection);
             commentForm.reset();
+            selectableText.addEventListener('mouseup', handleTextSelection);
             modal.style.display = 'none';
         });
 
 
         function handleTextSelection(){
           const selectedText = getSelectedText();
+          document.getElementById("your_selection").innerText = selectedText;
+          document.getElementById("update_selection").innerText = selectedText;
+          console.log(selectedText)
           if (selectedText) {
             selectableText.removeEventListener('mouseup', handleTextSelection);
             modal.style.display = 'block';
@@ -92,11 +93,7 @@
               return; // If submission is already in progress, do nothing
             }
             submitting = true; // Set the flag to indicate submission in progress
-
           
-
-          document.getElementById("your_selection").innerText = selectedText;
-          document.getElementById("update_selection").innerText = selectedText;
           
           commentForm.addEventListener('submit', (event) => {
             
@@ -118,7 +115,6 @@
               };
               
               submitComment(data);
-              commentForm.reset();
             }
           });
         }
@@ -145,7 +141,6 @@
           .then(response => response.json())
           .then(data => {
             commentForm.reset();
-            
             modal.style.display = 'none';
           })
           .catch(error => {
@@ -160,6 +155,52 @@
 
   
   </script>
+
+  <div class="floating-banner text-center">
+    <i>You have Logged in as Administrator. You can select any text and submit a report to change. View reports <a href="/admin?pg=Edits">here</a>!</i>
+    
+  </div>
+
+   <script>
+    const floatingBanner = document.querySelector('.floating-banner');
+
+    // Show the banner after 5 seconds
+    setTimeout(() => {
+      floatingBanner.classList.add('show');
+    }, 1000);
+  </script>
+
+
+<!-- Search text script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchText = urlParams.get('searchText');
+      console.log(searchText);
+
+      if (searchText) {
+        document.getElementById("script").remove();
+        document.getElementById("myModal").remove();
+        const targetTextNode = findTextNodeContainingText(document.body, searchText);
+        if (targetTextNode) {
+          const targetElement = targetTextNode.parentElement;
+          targetElement.classList.add('highlighted');
+        }
+      }
+    });
+
+
+    function findTextNodeContainingText(rootNode, searchText) {
+      const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, null, false);
+      while (walker.nextNode()) {
+        if (walker.currentNode.textContent.includes(searchText)) {
+          return walker.currentNode;
+        }
+      }
+      return null;
+    }
+    
+</script>
   <% } %>
 
 
@@ -259,10 +300,10 @@
   <!-- End Footer -->
 
 
- <script src="https://cdn.tiny.cloud/1/gn0jxl7c4ru4q6vhpqdqbolsc7vvs0mhw5q401gdz3lwrwah/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+ <!-- <script src="https://cdn.tiny.cloud/1/gn0jxl7c4ru4q6vhpqdqbolsc7vvs0mhw5q401gdz3lwrwah/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script> -->
 
   <!-- Tiny Config -->
-  <script>
+  <!-- <script>
     tinymce.init({
       selector: 'textarea',
       plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
@@ -275,4 +316,4 @@
       ],
       ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant"))
     });
-  </script>
+  </script> -->
