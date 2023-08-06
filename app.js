@@ -600,7 +600,7 @@ app.post(
 app.post(
   "/report_change",
   limit_req({
-    max: 20, // 20 requests
+    max: 200, // 20 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   ensureAuthenticated,
@@ -625,7 +625,7 @@ app.post(
 app.get(
   "/delete_report",
   limit_req({
-    max: 20, // 20 requests
+    max: 200, // 20 requests
     period: 60 * 1000, // per minute (60 seconds)
   }),
   ensureAuthenticated,
