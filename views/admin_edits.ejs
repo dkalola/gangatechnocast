@@ -22,7 +22,9 @@
 
                     <div class="collapse my-3" id="<%= repots[i].id %>">
                         <div class="card card-body">
-                            <h6><b>URL: </b><a href="<%= repots[i].url %>?searchText=<%= repots[i].your_selection %>" target="_blank"><%= repots[i].url %></a></h6>
+                            <% const searchTextQueryParam = `searchText=${encodeURIComponent(repots[i].your_selection)}`; %>
+                            <% const urlWithSearchParams = repots[i].url.includes('?') ? `${repots[i].url}&${searchTextQueryParam}` : `${repots[i].url}?${searchTextQueryParam}`; %>
+                            <h6><b>URL: </b><a href="<%= urlWithSearchParams %>" target="_blank"><%= repots[i].url %></a></h6>
                             
                             <br>
                             <h3>Target Text:</h3>

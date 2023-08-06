@@ -328,6 +328,7 @@ app.get(
   async (req, res) => {
     const user = auth.currentUser;
     try {
+      console.log(req.query);
       const docRef = doc(db, "blogs", req.query.id);
       const docSnap = await getDoc(docRef);
       const data = docSnap.data();
@@ -339,7 +340,8 @@ app.get(
         blogs: data,
         user: user != null ? user : false,
       });
-    } catch {
+    } catch (error) {
+      console.log(error)
       res.redirect("/blog");
     }
   }

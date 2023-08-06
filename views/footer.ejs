@@ -46,6 +46,12 @@
     </div>
 
   <script id="script">
+    // Path check. Disable reporting if admin page.
+    const currentPath = window.location.pathname;
+    if(currentPath == "/admin"){
+      document.getElementById("script").remove();
+      document.getElementById("myModal").remove();
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         const mainElement = document.querySelector('body');
@@ -156,21 +162,49 @@
   
   </script>
 
-  <div class="floating-banner text-center" id="banner">
+  <style>
+  /* Hide vertical scrollbar for the floating banner */
+  #banner::-webkit-scrollbar {
+    width: 0.5em; /* Set a width for the scrollbar */
+  }
+
+  #banner::-webkit-scrollbar-track {
+    background: transparent; /* Set a transparent background for the track */
+  }
+
+  #banner::-webkit-scrollbar-thumb {
+    background-color: transparent; /* Make the thumb transparent */
+  }
+</style>
+
+  <div class="floating-banner text-center" id="banner" style="max-height: 100%; overflow-y: scroll;">
     <i>You have Logged in as Administrator. You can select any text and submit a report to change. View reports <a href="/admin?pg=Edits">here</a>! <a type="button" id="Learn" class="btn btn-link">Learn More!</a></i>
     
-    <div class="row" style=" border-radius: 5px;" id="leanHow">
+    <div class="row" style=" border-radius: 5px;" id="leanHow" >
       <div class="col mt-3">
         <h4>How to use report tool!</h4>
         <hr>
         <div class="row mb-3 ">
           <div class="col">
             <img class="mb-2" src="assets/img/demo/img1.jpeg" alt="" height="300px">
-            <p>Select the text that you want to creat the report. </p>
+            <p><b>STEP 1: </b>Select the text that you want to creat the report. </p>
           </div>
           <div class="col">
             <img src="assets/img/demo/img2.jpeg" alt="" height="300px">
-            <p>Next Fillout the form. First field will allow you to change the text that you have selected. Second field is who is making this report and last is for your comments.</p>
+            <p><b>STEP 2: </b>Next Fillout the form. First field will allow you to change the text that you have selected. Second field is who is making this report and last is for your comments.</p>
+          </div>
+
+        </div>
+        <h4><span style="color: rgb(255, 49, 49);">What not to do</span> and <span style="color: greenyellow;">What to do</span>!</h4>
+        <hr>
+        <div class="row mb-3 ">
+          <div class="col">
+            <img class="mb-2" src="assets/img/demo/wrong.jpeg" alt="" height="300px">
+            <p><i class="bi bi-slash-circle-fill" style="color: rgb(255, 49, 49); font-size: 25px;"></i> Do not select the multiple paragraphs.</p>
+          </div>
+          <div class="col">
+            <img src="assets/img/demo/right.jpeg" alt="" height="300px">
+            <p><i class="bi bi-check-lg" style="color: greenyellow; font-size: 25px;"></i> Only select a single paragraphs</p>
           </div>
 
         </div>
@@ -215,6 +249,8 @@
 
 <!-- Search text script -->
 <script>
+
+  
   document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const searchText = urlParams.get('searchText');
@@ -226,6 +262,7 @@
         const targetTextNode = findTextNodeContainingText(document.body, searchText);
         if (targetTextNode) {
           const targetElement = targetTextNode.parentElement;
+          console.log(targetElement);
           targetElement.classList.add('highlighted');
         }
       }
