@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "snyk": "snyk test --all-projects --severity-threshold=high"
   },
   "keywords": [],
@@ -13,6 +13,7 @@
   "dependencies": {
     "@firebase/auth": "^1.1.0",
     "@firebase/firestore": "^2.4.1",
+
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
@@ -21,6 +22,7 @@
     "express-fileupload": "^1.4.0",
     "express-limit": "^1.0.0",
     "firebase": "^10.1.0",
+
     "protobufjs": "^7.2.4"
   },
   "devDependencies": {

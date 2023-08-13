@@ -19,24 +19,11 @@
           <li><a href="/projects" class="<%= activePage === 'projects' ? 'active' : '' %>">Projects</a></li>
           
           <li><a href="/blog" class="<%= activePage === 'blog' ? 'active' : '' %>">Blog</a></li>
-          <!-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li> -->
           <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">Contact</a></li>
+          <% if (user) { %>
+            <!-- Content to be displayed if the condition is true -->
+            <li style="color: white;"><a href="/admin"><%= user.email %></a></li>
+          <% } %>
           <% if (logout) { %>
             <!-- Content to be displayed if the condition is true -->
             <li><a href="/logout" style=" color: #ff0123;">Logout</a></li>
