@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@firebase/auth": "^1.1.0",
-    "@firebase/firestore": "^2.3.8",
-    "@sentry/node": "^7.61.0",
+    "@firebase/firestore": "^2.4.1",
+
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
