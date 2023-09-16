@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@firebase/auth": "^1.1.0",
+    "@firebase/auth": "^1.2.0",
     "@firebase/firestore": "^2.4.1",
 
     "axios": "^1.4.0",
@@ -23,7 +23,7 @@
     "express-limit": "^1.0.0",
     "firebase": "^10.2.0",
 
-    "protobufjs": "^7.2.4"
+    "protobufjs": "^7.2.5"
   },
   "devDependencies": {
     "eslint": "^8.46.0",
