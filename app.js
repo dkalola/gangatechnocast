@@ -90,7 +90,6 @@ Sentry.init({
   tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!,
 });
 
-// Trace incoming requests
 // UC
 // app.use(Sentry.Handlers.requestHandler());
 // app.use(Sentry.Handlers.tracingHandler());
