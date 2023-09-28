@@ -7,7 +7,8 @@
     "test": "jest --detectOpenHandles",
     "snyk": "snyk test --all-projects --severity-threshold=high",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "lint-staged": "lint-staged"
   },
   "keywords": [],
   "author": "",
