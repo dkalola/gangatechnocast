@@ -99,7 +99,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   logger.info(`${req.timestamp} ${req.method} ${req.url}`);
   logger.error(`Error: ${err.message}`, { error: err });
   res.status(500).send("Internal Server Error");
