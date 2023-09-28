@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const logger = require("./logger");
 const bodyParser = require("body-parser");
 const Sentry = require("@sentry/node");
 const { initializeApp } = require("firebase/app");
@@ -93,6 +94,21 @@ Sentry.init({
 // UC
 // app.use(Sentry.Handlers.requestHandler());
 // app.use(Sentry.Handlers.tracingHandler());
+
+app.use((req, res, next) => {
+  // Log the error using the Winston error transport
+  logger.info(`${req.timestamp} ${req.method} ${req.url}`);
+  next();
+});
+
+// Middleware for request logging
+app.use((err, req, res, next) => {
+  // Log the error using the Winston error transport
+  logger.info(`${req.timestamp} ${req.method} ${req.url}`);
+  logger.error(`Error: ${err.message}`, { error: err });
+  res.status(500).send("Internal Server Error");
+});
+
 
 app.get(
   "/",
