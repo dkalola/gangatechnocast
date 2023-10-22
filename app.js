@@ -146,6 +146,38 @@ app.get(
 );
 
 app.get(
+  "/bod",
+  limit_req({
+    max: 10, // 10 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    const user = auth.currentUser;
+    res.render("board_of_director", {
+      activePage: "bod",
+      logout: false,
+      user: user != null ? user : false,
+    });
+  }
+);
+
+app.get(
+  "/kp",
+  limit_req({
+    max: 10, // 10 requests
+    period: 60 * 1000, // per minute (60 seconds)
+  }),
+  (req, res) => {
+    const user = auth.currentUser;
+    res.render("key_personell", {
+      activePage: "kp",
+      logout: false,
+      user: user != null ? user : false,
+    });
+  }
+);
+
+app.get(
   "/wws",
   limit_req({
     max: 10, // 10 requests
