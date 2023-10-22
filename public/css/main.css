@@ -1305,7 +1305,7 @@ section {
   position: relative;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 2048px) {
   .team .member .member-img {
     margin: 0 60px;
   }
