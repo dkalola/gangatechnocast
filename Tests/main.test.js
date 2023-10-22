@@ -130,7 +130,7 @@ describe("Test routes", () => {
       "<title>Ganga Technocast - Contact</title>"
     );
     expect(response.text).toContain(
-      "<p>7QMM+QR2, Amin marg, Road, Amrut Park, </p> <p> Kotecha Nagar, Rajkot, Gujarat 360001, India</p>"
+      "<p>Survey No: 61/P3, Village: Bharudi, Tal: Gondal, </p> <p> <br> Rajkot, Gujarat 360311, India</p>"
     );
 
     expect(response.text).toContain(
