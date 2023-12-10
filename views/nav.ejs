@@ -1,37 +1,92 @@
- <!-- ======= Header ======= -->
-  <header id="header" class="header d-flex align-items-center">
-    <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+<!-- ======= Header ======= -->
+<header id="header" class="header d-flex align-items-center">
+  <div
+    class="container-fluid container-xl d-flex align-items-center justify-content-between px-lg-5 mx-lg-5"
+  >
+    <a href="/" class="logo d-flex align-items-center">
+      <!-- Uncomment the line below if you also wish to use an image logo -->
+      <img src="assets/img/logo.png" alt="" />
+      <!-- <h1>UpConstruction<span>.</span></h1> -->
+    </a>
 
-      <a href="/" class="logo d-flex align-items-center">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="assets/img/logo.png" alt="">
-        <!-- <h1>UpConstruction<span>.</span></h1> -->
-      </a>
+    <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+    <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li>
+          <a href="/" class="<%= activePage === 'home' ? 'active' : '' %>"
+            >Home</a
+          >
+        </li>
+        <li class="dropdown">
+          <a
+            href="/about"
+            class="<%= activePage === 'about' || activePage === 'bod' || activePage === 'kp' ? 'active' : '' %>"
+            >About</a
+          >
+          <ul>
+            <li><a href="/about">About us</a></li>
+            <li><a href="/bod">Board of Directors</a></li>
+            <li><a href="/kp">Key Personnel</a></li>
+          </ul>
+        </li>
 
-      <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
-      <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
-      <nav id="navbar" class="navbar"> 
-        <ul>
-          <li><a href="/" class="<%= activePage === 'home' ? 'active' : '' %>">Home</a></li>
-          <li><a href="/about" class="<%= activePage === 'about' ? 'active' : '' %>">About</a></li>
-          <li><a href="/bod" class="<%= activePage === 'bod' ? 'active' : '' %>">Board of Directors</a></li>
-          <li><a href="/kp" class="<%= activePage === 'kp' ? 'active' : '' %>">Key Personnel</a></li>
-          <li><a href="/ic" class="<%= activePage === 'ic' ? 'active' : '' %>">Investment Casting</a></li>
-          <li><a href="/wws" class="<%= activePage === 'services' ? 'active' : '' %>">Services</a></li>
-          <li><a href="/projects" class="<%= activePage === 'projects' ? 'active' : '' %>">Projects</a></li>
-          
-          <li><a href="/blog" class="<%= activePage === 'blog' ? 'active' : '' %>">Blog</a></li>
-          <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">Contact</a></li>
-          <% if (user) { %>
-            <!-- Content to be displayed if the condition is true -->
-            <li style="color: white;"><a href="/admin"><%= user.email %></a></li>
-          <% } %>
-          <% if (logout) { %>
-            <!-- Content to be displayed if the condition is true -->
-            <li><a href="/logout" style=" color: #ff0123;">Logout</a></li>
-          <% } %>
-        </ul>
-      </nav><!-- .navbar -->
+        <li class="dropdown">
+          <a href="/ic" class="<%= activePage === 'ic' ? 'active' : '' %>"
+            >Process</a
+          >
+          <ul>
+            <li><a href="/ic#process">Process</a></li>
+            <li class="dropdown">
+              <a href="/ic#Materials">Materials</a>
+              <ul>
+                <li><a href="/ic#pt">Properties Table</a></li>
+                <li><a href="/ic#st">Specifications Table</a></li>
+                <li><a href="/ic#ct">Compatibility Table</a></li>
+                <li><a href="/ic#cct">Cost Comparison Table</a></li>
+                <li><a href="/ic#sst">Sustainability Table</a></li>
+                <li><a href="/ic#at">Applications Table</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a
+            href="/wws"
+            class="<%= activePage === 'services' ? 'active' : '' %>"
+            >Services</a
+          >
+        </li>
+        <li>
+          <a
+            href="/projects"
+            class="<%= activePage === 'projects' ? 'active' : '' %>"
+            >Projects</a
+          >
+        </li>
 
-    </div>
-  </header><!-- End Header -->
+        <li>
+          <a href="/blog" class="<%= activePage === 'blog' ? 'active' : '' %>"
+            >Blog</a
+          >
+        </li>
+        <li>
+          <a
+            href="/contact"
+            class="<%= activePage === 'contact' ? 'active' : '' %>"
+            >Contact</a
+          >
+        </li>
+        <% if (user) { %>
+        <!-- Content to be displayed if the condition is true -->
+        <li style="color: white"><a href="/admin"><%= user.email %></a></li>
+        <% } %> <% if (logout) { %>
+        <!-- Content to be displayed if the condition is true -->
+        <li><a href="/logout" style="color: #ff0123">Logout</a></li>
+        <% } %>
+      </ul>
+    </nav>
+    <!-- .navbar -->
+  </div>
+</header>
+<!-- End Header -->

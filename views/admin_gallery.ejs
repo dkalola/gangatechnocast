@@ -1,42 +1,106 @@
 <div class="row">
-    <div class="col">
-        <div class="row">
-            <div class="col">
-                <h3>Gallery</h3>
-                <p><i>Add, Delete, Update your project images here.</i></p>
-            </div>
-            
-        </div>
-        
-        <hr>
-        <div class="row mb-5">
-            <div class="col-5">
-                
-                <form id="uploadForm" action="/admin" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="exampleFormControlInput1"><b>Image Name</b></label><br>
-                        <i style="color: red;">First Write the name and then upload the image.</i>
-                        <input type="text" class="form-control" id="imageName" name="imageName">
-                    </div>
-                    <div class="form-group my-3">
-                        <input type="file" name="file" id="file" class="form-control-file">
-                    </div>
-                    
-                </form>
-            </div>
-        </div>
-        <div class="row">
-        <% for (let i = 0; i < urls.length; i++) { %>
-            <div class="col-4 my-2">
-                <div class="card" style="width: auto">
-                    <img class="card-img-top" src="<%= urls[i].url %>" alt="Card image cap">
-                    <div class="card-body">
-                        <p class="card-text"><%= urls[i].path %></p>
-                        <a class="btn btn-danger" href="/admin?pg=Gallery&action=delete&imgurl=<%= urls[i].path %>" role="button">Delete</a>
-                    </div>
-                </div>
-            </div>
-        <% } %>
-        </div>
+  <div class="col">
+    <div class="row">
+      <div class="col">
+        <h3>Gallery</h3>
+        <p><i>Add, Delete, Update your project images here.</i></p>
+      </div>
     </div>
+
+    <hr />
+    <div class="row mb-2">
+      <div class="col-5">
+        <form
+          id="uploadForm"
+          action="/admin"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="form-group">
+            <label for="exampleFormControlInput1"><b>Image Name</b></label
+            ><br />
+            <i style="color: red"
+              >First Write the name and then upload the image.</i
+            >
+            <div class="row">
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="tagName"
+                  name="tagName"
+                  placeholder="Tag .."
+                />
+              </div>
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="imageName"
+                  name="imageName"
+                  placeholder="Image Name"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group my-3">
+            <i style="color: red"
+              >NOTE: The image will auto upload upon selecting the image. Please
+              don't reload or close the window. It will take few seconds.</i
+            >
+            <input
+              type="file"
+              name="file"
+              id="file"
+              class="form-control-file"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+    <div>
+      <h5>Tags used:</h5>
+      <% for (let i = 0; i < tags.length; i++) { %>
+      <span
+        class="mx-1"
+        style="
+          background-color: aqua;
+          color: black;
+          border-radius: 5px;
+          width: fit-content;
+        "
+      >
+        <span class="mx-3"><%= tags[i] %></span>
+      </span>
+
+      <% } %>
+    </div>
+    <hr />
+
+    <div class="row mt-3">
+      <% for (let i = 0; i < urls.length; i++) { %>
+      <div class="col-4 my-2">
+        <div class="card" style="width: auto">
+          <img
+            class="card-img-top"
+            src="<%= urls[i].url %>"
+            alt="Card image cap"
+          />
+          <div class="card-body">
+            <p class="card-text">Name: <%= urls[i].path %></p>
+            <p class="card-text">
+              Tag: <%= urls[i].metadata === "null"?"All":urls[i].metadata %>
+            </p>
+            <a
+              class="btn btn-danger"
+              href="/admin?pg=Gallery&action=delete&imgurl=<%= urls[i].path %>"
+              role="button"
+              >Delete</a
+            >
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
 </div>

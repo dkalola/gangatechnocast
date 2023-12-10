@@ -2674,62 +2674,130 @@ section {
   color: var(--color-primary);
 }
 
-
-
 /* Styles for the modal */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-    background-color: white;
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    margin: auto;
-    margin-top: 10%;
-    position: relative;
+  background-color: white;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  margin: auto;
+  margin-top: 10%;
+  position: relative;
 }
 
 /* Close button */
 .close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 24px;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
 }
 
 /* Floating banner */
 
 .floating-banner {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    display: none;
-    width: 100%;
-  }
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: none;
+  width: 100%;
+}
 
-  .floating-banner.show {
-    display: block;
-  }
+.floating-banner.show {
+  display: block;
+}
 
-  .highlighted {
-      background-color: rgb(0, 255, 200);
-      border-radius: 5px;
-      padding: 10px;
-    }
+.highlighted {
+  background-color: rgb(0, 255, 200);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+/* -------------------------------------------------------------------------
+  VERTICAL STEPPERS
+-------------------------------------------------------------------------- */
+
+/* Steps */
+.step {
+  position: relative;
+  min-height: 1em;
+  color: gray;
+}
+.step + .step {
+  margin-top: 1.5em;
+}
+.step > div:first-child {
+  position: static;
+  height: 0;
+}
+.step > div:not(:first-child) {
+  margin-left: 1.5em;
+  padding-left: 1em;
+}
+.step.step-active {
+  color: #4285f4;
+}
+.step.step-active .circle {
+  background-color: #4285f4;
+}
+
+/* Circle */
+.circle {
+  background: gray;
+  position: relative;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5em;
+  border-radius: 100%;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 0 3px #fff;
+}
+
+/* Vertical Line */
+.circle:after {
+  content: " ";
+  position: absolute;
+  display: block;
+  top: 1px;
+  right: 50%;
+  bottom: 1px;
+  left: 50%;
+  height: 100%;
+  width: 1px;
+  transform: scale(1, 2);
+  transform-origin: 50% -100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: -1;
+}
+.step:last-child .circle:after {
+  display: none;
+}
+
+/* Stepper Titles */
+.title {
+  line-height: 1.5em;
+  font-weight: bold;
+}
+.caption {
+  font-size: 0.8em;
+}

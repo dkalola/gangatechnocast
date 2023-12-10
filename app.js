@@ -11,6 +11,7 @@ const {
   getDownloadURL,
   deleteObject,
   uploadBytes,
+  getMetadata,
 } = require("firebase/storage");
 const {
   getFirestore,
@@ -105,7 +106,6 @@ app.use((req, res, next) => {
 //   res.send("Internal Server Error");
 // });
 
-
 app.get(
   "/",
   limit_req({
@@ -114,7 +114,7 @@ app.get(
   }),
   async (req, res) => {
     const user = auth.currentUser;
-    let urls = await getUrls("Gallery");
+    let urls = (await getUrls("Gallery"))[0];
 
     for (let i = 0; i < urls.length; i++) {
       const item = urls[i];
@@ -291,8 +291,8 @@ app.get(
   }),
   async (req, res) => {
     const user = auth.currentUser;
-    let urls = await getUrls("Gallery");
-
+    let data = await getUrls("Gallery");
+    let urls = data[0];
     for (let i = 0; i < urls.length; i++) {
       const item = urls[i];
       const pathParts = item.path.split(".");
@@ -304,6 +304,7 @@ app.get(
       logout: false,
       urls: urls,
       user: user != null ? user : false,
+      tags: data[1],
     });
   }
 );
@@ -385,7 +386,7 @@ app.get(
         user: user != null ? user : false,
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       res.redirect("/blog");
     }
   }
@@ -413,13 +414,15 @@ app.get(
           await deleteImage(imgURL);
         }
         // get all links to the image
-        let urls = await getUrls("Gallery");
+        let alldata = await getUrls("Gallery");
+        let urls = alldata[0];
         res.render("admin", {
           activePage: "admin",
           logout: true,
           pg: pg,
           urls: urls,
           user: user != null ? user : false,
+          tags: alldata[1],
         });
       } else if (pg == "Quotes") {
         let quoteList = [];
@@ -580,7 +583,15 @@ app.post(
   async (req, res) => {
     // Access the file u.file
     const fileData = req.files.file.data;
-    let status = await uploadImage(fileData, req.files.file.name);
+    const tag = req.body.tagName;
+    const metadata = {
+      contentType: "image/jpeg",
+      customMetadata: {
+        tag: tag,
+        // Add more custom metadata as needed
+      },
+    };
+    let status = await uploadImage(fileData, req.files.file.name, metadata);
     if (status) {
       res.sendStatus(200);
     } else {
@@ -757,16 +768,27 @@ function formatMonthAndDate(date1) {
 async function getUrls(path) {
   const listRef = ref(storage, path);
   const URLS = [];
+  const tags = [];
 
   try {
     const res = await listAll(listRef);
 
     const promises = res.items.map(async (itemRef) => {
       try {
+        const metadata = await getMetadata(ref(storage, itemRef.fullPath));
         const url = await getDownloadURL(ref(storage, itemRef.fullPath));
+        tags.push(
+          metadata.customMetadata !== undefined
+            ? metadata.customMetadata.tag
+            : "All"
+        );
         URLS.push({
           url: url,
           path: itemRef.fullPath.split("/")[1],
+          metadata:
+            metadata.customMetadata !== undefined
+              ? metadata.customMetadata.tag
+              : "null",
         });
       } catch (error) {
         console.log(error);
@@ -776,10 +798,13 @@ async function getUrls(path) {
     // Wait for all the promises to resolve
     await Promise.all(promises);
 
-    return URLS;
+    const returnData = [URLS, Array.from(new Set(tags))];
+
+    return returnData;
   } catch (error) {
     console.log(error);
-    return URLS;
+    const returnData = [URLS, Array.from(new Set(tags))];
+    return returnData;
   }
 }
 
@@ -802,10 +827,10 @@ async function deleteImage(url) {
     });
 }
 
-async function uploadImage(data, name) {
+async function uploadImage(data, name, metadata) {
   const storageRef = ref(storage, `Gallery/${name}`);
 
-  await uploadBytes(storageRef, data)
+  await uploadBytes(storageRef, data, metadata)
     .then((snapshot) => {
       console.log("File uploaded to Firebase Storage!");
       // Optionally, you can remove the file from the server after uploading to Firebase Storage
