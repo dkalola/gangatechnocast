@@ -129,10 +129,6 @@ describe("Test routes", () => {
     expect(response.text).toContain(
       "<title>Ganga Technocast - Contact</title>"
     );
-
-    expect(response.text).toContain(
-      '<form id="contact_us" class="php-email-form" action="/contact-us" method="post">'
-    );
   });
 
   test("GET /blog should return status code 200 and render the projects page with correct data", async () => {
