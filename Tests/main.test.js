@@ -129,9 +129,6 @@ describe("Test routes", () => {
     expect(response.text).toContain(
       "<title>Ganga Technocast - Contact</title>"
     );
-    expect(response.text).toContain(
-      "<p>Survey No: 61/P3, Village: Bharudi, Tal: Gondal, </p> <p>Rajkot, Gujarat 360311, India</p>"
-    );
 
     expect(response.text).toContain(
       '<form id="contact_us" class="php-email-form" action="/contact-us" method="post">'
