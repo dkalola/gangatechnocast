@@ -1,13 +1,16 @@
 # gangatechnocast
+
 ## Install Dependencies
+
 `npm install`
 
-This will install dependencies that is required for this project.
+This will install dependencies that is required for this project..
 
 ## Start Project
+
 `node app.js`
 
-This is the basic command to run the application. 
+This is the basic command to run the application.
 
 NOTE: If you make any changes while the application is running. You will have to Ctrl+C and re-run the application by the command mentioned above.
 
@@ -37,6 +40,7 @@ gangatechnocast   latest    796959880cb1   7 seconds ago   2.02GB
 ```
 
 #### Running the Docker Container
-You can also start the container by checking the Docker Desktop. Got to images in Docker Desktop and you would be able to see the GangaTechnocast. 
+
+You can also start the container by checking the Docker Desktop. Got to images in Docker Desktop and you would be able to see the GangaTechnocast.
 
 `docker run -p 3000:3000 gangatechnocast`
