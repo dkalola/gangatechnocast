@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "**",
-        "function": "node app.js"
+        "function": "app"
       }
     ]
   }
