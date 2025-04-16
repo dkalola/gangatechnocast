@@ -1058,7 +1058,7 @@ app.post(
 // The error handler must be registered before any other error middleware and after all controllers
 // app.use(Sentry.Handlers.errorHandler());
 
-const port = 3000;
+const port = 3001;
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
