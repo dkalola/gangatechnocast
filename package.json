@@ -21,7 +21,7 @@
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "emailjs": "^4.0.2",
-    "express": "^4.18.2",
+    "express": "^4.21.1",
     "express-fileupload": "^1.4.0",
     "express-limit": "^1.0.0",
     "firebase": "^10.2.0",
